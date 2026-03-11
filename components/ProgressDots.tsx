@@ -1,11 +1,9 @@
 "use client";
 
-const TOTAL_STEPS = 10;
-
-export default function ProgressDots({ current }: { current: number }) {
+export default function ProgressDots({ current, total = 9 }: { current: number; total?: number }) {
   return (
     <div className="flex gap-[6px] justify-center py-4">
-      {Array.from({ length: TOTAL_STEPS }).map((_, i) => (
+      {Array.from({ length: total }).map((_, i) => (
         <div
           key={i}
           className="h-[3px] rounded-full transition-all duration-500 ease-out"

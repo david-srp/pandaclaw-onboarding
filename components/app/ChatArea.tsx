@@ -1,19 +1,16 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   History,
   Send,
   Paperclip,
-  Download,
-  ExternalLink,
-  Play,
-  FileText,
-  Globe,
-  Film,
   ChevronDown,
   FolderOpen,
+  Sunrise,
+  CalendarDays,
+  MessageCircle,
 } from "lucide-react";
 
 interface ChatAreaProps {
@@ -24,14 +21,8 @@ interface ChatAreaProps {
 
 interface Message {
   id: string;
-  type: "user" | "ai" | "report" | "webpage" | "video";
+  type: "user" | "ai" | "tasks";
   content?: string;
-  meta?: {
-    title?: string;
-    summary?: string;
-    url?: string;
-    duration?: string;
-  };
 }
 
 const historyItems = [
@@ -41,173 +32,108 @@ const historyItems = [
   { id: "4", title: "Goal planning session", date: "Mar 7" },
 ];
 
-const mockMessages: Message[] = [
-  {
-    id: "ctx",
-    type: "ai",
-    content: "CONTEXT_CARD",
-  },
-  {
-    id: "1",
-    type: "ai",
-    content:
-      "I'd love to help you with that! Let me start by understanding your morning routine. What time do you usually wake up, and what information matters most to you first thing?",
-  },
-  {
-    id: "2",
-    type: "user",
-    content:
-      "I wake up around 7am. I need weather, my calendar, and top 3 news headlines — nothing too heavy.",
-  },
-  {
-    id: "3",
-    type: "ai",
-    content:
-      "Perfect — light and focused. I've put together a briefing format for you. Here's a sample report based on today's data:",
-  },
-  {
-    id: "4",
-    type: "report",
-    meta: {
-      title: "Morning Briefing — Mar 10",
-      summary:
-        "Weather: 62°F partly cloudy. 3 meetings today. Headlines: AI regulation update, market rally continues, new space mission launch.",
-    },
-  },
-  {
-    id: "5",
-    type: "user",
-    content: "This is great! Can you also make a simple dashboard page I can bookmark?",
-  },
-  {
-    id: "6",
-    type: "ai",
-    content:
-      "Absolutely! I've created a clean dashboard page for you. It auto-refreshes each morning at 6:45am so it's ready when you are.",
-  },
-  {
-    id: "7",
-    type: "webpage",
-    meta: {
-      title: "My Morning Dashboard",
-      url: "app.pandaclaw.com/dashboard/morning",
-    },
-  },
-  {
-    id: "8",
-    type: "user",
-    content: "One more thing — could you record a quick video walkthrough of how to customize it?",
-  },
-  {
-    id: "9",
-    type: "ai",
-    content: "Done! Here's a short walkthrough showing how to rearrange widgets and add new data sources.",
-  },
-  {
-    id: "10",
-    type: "video",
-    meta: {
-      title: "Dashboard Customization Guide",
-      duration: "2:34",
-    },
-  },
-];
+const STORAGE_KEY = "pandaclaw-onboarding";
 
-function ContextCard({ task }: { task: string }) {
-  return (
-    <div className="bg-accent-light border border-accent/20 rounded-2xl p-4 mb-1">
-      <p className="text-[11px] font-semibold text-accent uppercase tracking-wider mb-1">
-        Current Task
-      </p>
-      <p className="text-[14px] text-foreground font-medium">{task}</p>
-    </div>
-  );
-}
-
-function ReportCard({ meta }: { meta: Message["meta"] }) {
-  return (
-    <div className="bg-white border border-cream-dark rounded-2xl overflow-hidden max-w-[360px]">
-      <div className="bg-gradient-to-br from-accent/5 to-accent/10 px-4 py-3 flex items-center gap-2.5">
-        <div className="w-9 h-9 rounded-xl bg-accent/15 flex items-center justify-center">
-          <FileText size={18} className="text-accent" />
-        </div>
-        <div className="min-w-0 flex-1">
-          <p className="text-[14px] font-semibold text-foreground truncate">
-            {meta?.title}
-          </p>
-          <p className="text-[11px] text-warm-gray">Report</p>
-        </div>
-      </div>
-      <div className="px-4 py-3">
-        <p className="text-[13px] text-warm-gray leading-relaxed">
-          {meta?.summary}
-        </p>
-      </div>
-      <div className="px-4 pb-3">
-        <button className="flex items-center gap-1.5 text-accent text-[13px] font-medium hover:underline cursor-pointer">
-          <Download size={14} />
-          Download report
-        </button>
-      </div>
-    </div>
-  );
-}
-
-function WebpageCard({ meta }: { meta: Message["meta"] }) {
-  return (
-    <div className="bg-white border border-cream-dark rounded-2xl overflow-hidden max-w-[360px]">
-      <div className="h-32 bg-gradient-to-br from-cream-dark to-cream flex items-center justify-center">
-        <Globe size={32} className="text-warm-gray-light" />
-      </div>
-      <div className="px-4 py-3">
-        <p className="text-[14px] font-semibold text-foreground">
-          {meta?.title}
-        </p>
-        <p className="text-[12px] text-warm-gray mt-0.5">{meta?.url}</p>
-      </div>
-      <div className="px-4 pb-3">
-        <button className="flex items-center gap-1.5 text-accent text-[13px] font-medium hover:underline cursor-pointer">
-          <ExternalLink size={14} />
-          Open page
-        </button>
-      </div>
-    </div>
-  );
-}
-
-function VideoCard({ meta }: { meta: Message["meta"] }) {
-  return (
-    <div className="bg-white border border-cream-dark rounded-2xl overflow-hidden max-w-[360px]">
-      <div className="h-40 bg-gradient-to-br from-[#1a1a17] to-[#2a2a24] flex items-center justify-center relative">
-        <button className="w-14 h-14 rounded-full bg-accent flex items-center justify-center shadow-lg hover:scale-105 transition-transform cursor-pointer">
-          <Play size={22} className="text-white ml-0.5" fill="white" />
-        </button>
-        <span className="absolute bottom-2 right-3 text-[11px] text-white/70 font-medium bg-black/40 px-1.5 py-0.5 rounded">
-          {meta?.duration}
-        </span>
-      </div>
-      <div className="px-4 py-3 flex items-center gap-2.5">
-        <div className="w-8 h-8 rounded-lg bg-accent-light flex items-center justify-center">
-          <Film size={16} className="text-accent" />
-        </div>
-        <div>
-          <p className="text-[14px] font-semibold text-foreground">
-            {meta?.title}
-          </p>
-          <p className="text-[12px] text-warm-gray">{meta?.duration}</p>
-        </div>
-      </div>
-    </div>
-  );
+function getTasksForRole(role: string) {
+  const lower = role.toLowerCase();
+  if (lower.includes("work") || lower.includes("assistant") || lower.includes("办公")) {
+    return [
+      { icon: Sunrise, label: "Set up your morning briefing", desc: "Weather, calendar & headlines at 7am" },
+      { icon: CalendarDays, label: "Review today's schedule", desc: "See what's on your calendar" },
+      { icon: MessageCircle, label: "Draft an email for me", desc: "Quick professional writing" },
+    ];
+  }
+  if (lower.includes("market") || lower.includes("growth") || lower.includes("运营")) {
+    return [
+      { icon: CalendarDays, label: "Analyze campaign performance", desc: "Review key metrics & insights" },
+      { icon: Sunrise, label: "Draft social media content", desc: "Create posts for your channels" },
+      { icon: MessageCircle, label: "Brainstorm growth ideas", desc: "Explore new strategies together" },
+    ];
+  }
+  if (lower.includes("invest") || lower.includes("finance") || lower.includes("理财")) {
+    return [
+      { icon: Sunrise, label: "Morning market briefing", desc: "Key moves & headlines overnight" },
+      { icon: CalendarDays, label: "Review my portfolio", desc: "Check allocations & performance" },
+      { icon: MessageCircle, label: "Explain a financial concept", desc: "Learn something new" },
+    ];
+  }
+  if (lower.includes("learn") || lower.includes("companion") || lower.includes("学习")) {
+    return [
+      { icon: Sunrise, label: "Start a learning session", desc: "Pick a topic and dive in" },
+      { icon: CalendarDays, label: "Set a learning goal", desc: "Track your progress weekly" },
+      { icon: MessageCircle, label: "Quiz me on something", desc: "Test what you've learned" },
+    ];
+  }
+  if (lower.includes("project") || lower.includes("管理")) {
+    return [
+      { icon: CalendarDays, label: "Plan a new project", desc: "Break it into milestones" },
+      { icon: Sunrise, label: "Daily standup summary", desc: "What's done, what's next" },
+      { icon: MessageCircle, label: "Prioritize my tasks", desc: "Focus on what matters most" },
+    ];
+  }
+  if (lower.includes("content") || lower.includes("创作")) {
+    return [
+      { icon: Sunrise, label: "Brainstorm content ideas", desc: "Get inspired for your next piece" },
+      { icon: CalendarDays, label: "Plan a content calendar", desc: "Stay consistent & organized" },
+      { icon: MessageCircle, label: "Help me write something", desc: "Co-create with me" },
+    ];
+  }
+  // default
+  return [
+    { icon: MessageCircle, label: "Just have a conversation", desc: "Chat about anything" },
+    { icon: Sunrise, label: "Set up a morning briefing", desc: "Start your day informed" },
+    { icon: CalendarDays, label: "Help me plan something", desc: "Organize an idea or project" },
+  ];
 }
 
 export default function ChatArea({
   onToggleFiles,
   filesOpen,
-  chosenTask,
 }: ChatAreaProps) {
   const [historyOpen, setHistoryOpen] = useState(false);
   const [inputValue, setInputValue] = useState("");
+  const [userName, setUserName] = useState("");
+  const [role, setRole] = useState("");
+  const [messages, setMessages] = useState<Message[]>([]);
+
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (saved) {
+        const data = JSON.parse(saved);
+        const name = data.userName || "friend";
+        const userRole = data.role || "";
+        setUserName(name);
+        setRole(userRole);
+
+        setMessages([
+          {
+            id: "greeting",
+            type: "ai",
+            content: `Hey ${name}! 👋 I'm your Claw — ready to help whenever you need me. Based on what you told me, here are a few things we can start with:`,
+          },
+          {
+            id: "tasks",
+            type: "tasks",
+          },
+        ]);
+      }
+    } catch {}
+  }, []);
+
+  const tasks = getTasksForRole(role);
+
+  const handleTaskClick = (label: string) => {
+    setMessages((prev) => [
+      ...prev,
+      { id: `user-${Date.now()}`, type: "user", content: label },
+      {
+        id: `ai-${Date.now()}`,
+        type: "ai",
+        content: `Great choice! Let me help you with "${label}". Let's get started — what would you like to do first?`,
+      },
+    ]);
+  };
 
   return (
     <div className="flex-1 flex flex-col h-full min-w-0">
@@ -267,10 +193,7 @@ export default function ChatArea({
 
       {/* Messages */}
       <div className="flex-1 overflow-y-auto px-4 md:px-8 py-6 space-y-5">
-        {mockMessages.map((msg) => {
-          if (msg.content === "CONTEXT_CARD") {
-            return <ContextCard key={msg.id} task={chosenTask} />;
-          }
+        {messages.map((msg) => {
           if (msg.type === "user") {
             return (
               <div key={msg.id} className="flex justify-end">
@@ -294,27 +217,37 @@ export default function ChatArea({
               </div>
             );
           }
-          if (msg.type === "report") {
+          if (msg.type === "tasks") {
             return (
               <div key={msg.id} className="flex gap-2.5 max-w-[85%]">
                 <div className="w-7 h-7 shrink-0" />
-                <ReportCard meta={msg.meta} />
-              </div>
-            );
-          }
-          if (msg.type === "webpage") {
-            return (
-              <div key={msg.id} className="flex gap-2.5 max-w-[85%]">
-                <div className="w-7 h-7 shrink-0" />
-                <WebpageCard meta={msg.meta} />
-              </div>
-            );
-          }
-          if (msg.type === "video") {
-            return (
-              <div key={msg.id} className="flex gap-2.5 max-w-[85%]">
-                <div className="w-7 h-7 shrink-0" />
-                <VideoCard meta={msg.meta} />
+                <div className="flex flex-col gap-2 w-full">
+                  {tasks.map((task, i) => {
+                    const Icon = task.icon;
+                    return (
+                      <button
+                        key={i}
+                        onClick={() => handleTaskClick(task.label)}
+                        className="flex items-center gap-3 bg-white border border-cream-dark rounded-2xl px-4 py-3.5 hover:border-accent/30 hover:bg-accent-light/30 transition-all cursor-pointer text-left group"
+                      >
+                        <div className="w-9 h-9 rounded-xl bg-accent-light flex items-center justify-center shrink-0 group-hover:bg-accent/15 transition-colors">
+                          <Icon size={18} className="text-accent" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <span className="text-[14px] font-medium text-foreground block">
+                            {task.label}
+                          </span>
+                          <span className="text-[12px] text-warm-gray">
+                            {task.desc}
+                          </span>
+                        </div>
+                        <svg className="text-warm-gray-light group-hover:text-accent transition-colors shrink-0" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <polyline points="9 18 15 12 9 6" />
+                        </svg>
+                      </button>
+                    );
+                  })}
+                </div>
               </div>
             );
           }

@@ -1,89 +1,74 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import { useRouter } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import ProgressDots from "@/components/ProgressDots";
 import LandingScreen from "@/components/screens/LandingScreen";
 import RegisterScreen from "@/components/screens/RegisterScreen";
 import NameInputScreen from "@/components/screens/NameInputScreen";
-import HappyThingScreen from "@/components/screens/HappyThingScreen";
-import PersonaChoiceScreen from "@/components/screens/PersonaChoiceScreen";
-import PersonaDetailScreen from "@/components/screens/PersonaDetailScreen";
-import LoadingScreen from "@/components/screens/LoadingScreen";
-import NameRevealScreen from "@/components/screens/NameRevealScreen";
+import RoleScreen from "@/components/screens/RoleScreen";
 import ChannelScreen from "@/components/screens/ChannelScreen";
-import GoalScreen from "@/components/screens/GoalScreen";
-import QuickstartScreen from "@/components/screens/QuickstartScreen";
+import AppDownloadScreen from "@/components/screens/AppDownloadScreen";
+import SmsVerifyScreen from "@/components/screens/SmsVerifyScreen";
+import SetupLoadingScreen from "@/components/screens/SetupLoadingScreen";
+import InviteCodeScreen from "@/components/screens/InviteCodeScreen";
+import EndingScreen from "@/components/screens/EndingScreen";
 
 type Screen =
   | "landing"
   | "register"
+  | "inviteCode"
   | "nameInput"
-  | "happyThing"
-  | "personaChoice"
-  | "personaDetail"
-  | "loading"
-  | "nameReveal"
+  | "role"
   | "channel"
-  | "goal"
-  | "quickstart";
+  | "appDownload"
+  | "smsVerify"
+  | "setupLoading"
+  | "ending";
 
 const SCREEN_ORDER: Screen[] = [
   "landing",
   "register",
+  "inviteCode",
   "nameInput",
-  "happyThing",
-  "personaChoice",
-  "personaDetail",
-  "loading",
-  "nameReveal",
+  "role",
   "channel",
-  "goal",
-  "quickstart",
 ];
 
 function getStepIndex(screen: Screen): number {
+  if (["appDownload", "smsVerify", "setupLoading", "ending"].includes(screen)) {
+    return SCREEN_ORDER.length - 2;
+  }
   const idx = SCREEN_ORDER.indexOf(screen);
   return idx <= 0 ? 0 : idx - 1;
 }
+
+const TOTAL_STEPS = SCREEN_ORDER.length - 1;
 
 const STORAGE_KEY = "pandaclaw-onboarding";
 
 interface OnboardingState {
   screen: Screen;
   userName: string;
-  happyThing: string;
-  clawName: string;
+  role: string;
   channels: string[];
-  goal: string;
-  traits: string[];
-  avatarDesc: string;
-  voice: string;
 }
 
 const defaultState: OnboardingState = {
   screen: "landing",
   userName: "",
-  happyThing: "",
-  clawName: "",
+  role: "",
   channels: [],
-  goal: "",
-  traits: [],
-  avatarDesc: "",
-  voice: "",
 };
 
 export default function Home() {
+  const router = useRouter();
   const [state, setState] = useState<OnboardingState>(defaultState);
   const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
-    try {
-      const saved = localStorage.getItem(STORAGE_KEY);
-      if (saved) {
-        setState({ ...defaultState, ...JSON.parse(saved) });
-      }
-    } catch {}
+    localStorage.removeItem(STORAGE_KEY);
     setLoaded(true);
   }, []);
 
@@ -98,19 +83,32 @@ export default function Home() {
   }, []);
 
   const goBack = useCallback(() => {
+    if (["appDownload", "smsVerify", "setupLoading", "ending"].includes(state.screen)) {
+      update({ screen: "channel" });
+      return;
+    }
     const idx = SCREEN_ORDER.indexOf(state.screen);
     if (idx > 0) {
-      let prevIdx = idx - 1;
-      if (SCREEN_ORDER[prevIdx] === "personaDetail" && state.traits.length === 0) {
-        prevIdx--;
-      }
-      update({ screen: SCREEN_ORDER[prevIdx] });
+      update({ screen: SCREEN_ORDER[idx - 1] });
     }
-  }, [state.screen, state.traits.length, update]);
+  }, [state.screen, update]);
+
+  const handleChannelSelect = useCallback(
+    (channel: string) => {
+      if (channel === "app") {
+        update({ channels: [channel], screen: "appDownload" });
+      } else if (channel === "sms") {
+        update({ channels: [channel], screen: "smsVerify" });
+      } else {
+        update({ channels: [channel], screen: "setupLoading" });
+      }
+    },
+    [update]
+  );
 
   if (!loaded) return null;
 
-  const showNav = state.screen !== "landing";
+  const showNav = state.screen !== "landing" && state.screen !== "setupLoading" && state.screen !== "ending";
 
   return (
     <div className="relative min-h-screen">
@@ -124,7 +122,7 @@ export default function Home() {
               &larr; Back
             </button>
             <div className="flex-1">
-              <ProgressDots current={getStepIndex(state.screen)} />
+              <ProgressDots current={getStepIndex(state.screen)} total={TOTAL_STEPS} />
             </div>
             <div className="w-12" />
           </div>
@@ -143,62 +141,44 @@ export default function Home() {
             <LandingScreen onNext={() => update({ screen: "register" })} />
           )}
           {state.screen === "register" && (
-            <RegisterScreen onNext={() => update({ screen: "nameInput" })} />
+            <RegisterScreen onNext={() => update({ screen: "inviteCode" })} />
+          )}
+          {state.screen === "inviteCode" && (
+            <InviteCodeScreen onNext={() => update({ screen: "nameInput" })} />
           )}
           {state.screen === "nameInput" && (
             <NameInputScreen
               userName={state.userName}
-              onNext={(name) => update({ userName: name, screen: "happyThing" })}
+              onNext={(name) => update({ userName: name, screen: "role" })}
             />
           )}
-          {state.screen === "happyThing" && (
-            <HappyThingScreen
-              happyThing={state.happyThing}
-              onNext={(thing) => update({ happyThing: thing, screen: "channel" })}
-            />
-          )}
-          {state.screen === "personaChoice" && (
-            <PersonaChoiceScreen
-              onCustomize={() => update({ screen: "personaDetail" })}
-              onSkip={() => update({ screen: "loading" })}
-            />
-          )}
-          {state.screen === "personaDetail" && (
-            <PersonaDetailScreen
-              happyThing={state.happyThing}
-              onNext={(data) =>
-                update({
-                  traits: data.traits,
-                  avatarDesc: data.avatarDesc,
-                  voice: data.voice,
-                  screen: "loading",
-                })
-              }
-            />
-          )}
-          {state.screen === "loading" && (
-            <LoadingScreen onDone={() => update({ screen: "nameReveal" })} />
-          )}
-          {state.screen === "nameReveal" && (
-            <NameRevealScreen
+          {state.screen === "role" && (
+            <RoleScreen
               userName={state.userName}
-              happyThing={state.happyThing}
-              onNext={(name) => update({ clawName: name, screen: "channel" })}
+              onNext={(role) => update({ role, screen: "channel" })}
             />
           )}
           {state.screen === "channel" && (
-            <ChannelScreen
-              onNext={(channels) => update({ channels, screen: "goal" })}
+            <ChannelScreen onNext={handleChannelSelect} />
+          )}
+          {state.screen === "appDownload" && (
+            <AppDownloadScreen onBack={() => update({ screen: "channel" })} />
+          )}
+          {state.screen === "smsVerify" && (
+            <SmsVerifyScreen
+              onDone={() => update({ screen: "ending" })}
+              onBack={() => update({ screen: "channel" })}
             />
           )}
-          {state.screen === "goal" && (
-            <GoalScreen
+          {state.screen === "setupLoading" && (
+            <SetupLoadingScreen onDone={() => update({ screen: "ending" })} />
+          )}
+          {state.screen === "ending" && (
+            <EndingScreen
               userName={state.userName}
-              onNext={(goal) => update({ goal, screen: "quickstart" })}
+              channel={state.channels[0] || "web"}
+              onStart={() => router.push("/app")}
             />
-          )}
-          {state.screen === "quickstart" && (
-            <QuickstartScreen userName={state.userName} />
           )}
         </motion.div>
       </AnimatePresence>
