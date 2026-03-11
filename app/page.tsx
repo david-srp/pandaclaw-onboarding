@@ -154,7 +154,7 @@ export default function Home() {
           {state.screen === "happyThing" && (
             <HappyThingScreen
               happyThing={state.happyThing}
-              onNext={(thing) => update({ happyThing: thing, screen: "personaChoice" })}
+              onNext={(thing) => update({ happyThing: thing, screen: "channel" })}
             />
           )}
           {state.screen === "personaChoice" && (

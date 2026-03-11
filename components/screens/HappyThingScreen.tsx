@@ -24,7 +24,7 @@ export default function HappyThingScreen({
         <textarea
           value={thing}
           onChange={(e) => setThing(e.target.value)}
-          placeholder="Something that makes you happy..."
+          placeholder="This helps shape your agent's soul to better match your preferences..."
           rows={4}
           className="textarea-editorial"
         />
@@ -35,6 +35,13 @@ export default function HappyThingScreen({
           className="mt-8 w-full btn-primary"
         >
           Continue
+        </button>
+
+        <button
+          onClick={() => onNext("")}
+          className="mt-3 w-full py-3 text-sm text-foreground/40 hover:text-foreground/60 transition-colors"
+        >
+          Skip for Now
         </button>
       </div>
     </div>
