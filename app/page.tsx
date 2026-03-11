@@ -1,65 +1,207 @@
-import Image from "next/image";
+"use client";
+
+import { useState, useEffect, useCallback } from "react";
+import { AnimatePresence, motion } from "framer-motion";
+import ProgressDots from "@/components/ProgressDots";
+import LandingScreen from "@/components/screens/LandingScreen";
+import RegisterScreen from "@/components/screens/RegisterScreen";
+import NameInputScreen from "@/components/screens/NameInputScreen";
+import HappyThingScreen from "@/components/screens/HappyThingScreen";
+import PersonaChoiceScreen from "@/components/screens/PersonaChoiceScreen";
+import PersonaDetailScreen from "@/components/screens/PersonaDetailScreen";
+import LoadingScreen from "@/components/screens/LoadingScreen";
+import NameRevealScreen from "@/components/screens/NameRevealScreen";
+import ChannelScreen from "@/components/screens/ChannelScreen";
+import GoalScreen from "@/components/screens/GoalScreen";
+import QuickstartScreen from "@/components/screens/QuickstartScreen";
+
+type Screen =
+  | "landing"
+  | "register"
+  | "nameInput"
+  | "happyThing"
+  | "personaChoice"
+  | "personaDetail"
+  | "loading"
+  | "nameReveal"
+  | "channel"
+  | "goal"
+  | "quickstart";
+
+const SCREEN_ORDER: Screen[] = [
+  "landing",
+  "register",
+  "nameInput",
+  "happyThing",
+  "personaChoice",
+  "personaDetail",
+  "loading",
+  "nameReveal",
+  "channel",
+  "goal",
+  "quickstart",
+];
+
+function getStepIndex(screen: Screen): number {
+  const idx = SCREEN_ORDER.indexOf(screen);
+  return idx <= 0 ? 0 : idx - 1;
+}
+
+const STORAGE_KEY = "pandaclaw-onboarding";
+
+interface OnboardingState {
+  screen: Screen;
+  userName: string;
+  happyThing: string;
+  clawName: string;
+  channels: string[];
+  goal: string;
+  traits: string[];
+  avatarDesc: string;
+  voice: string;
+}
+
+const defaultState: OnboardingState = {
+  screen: "landing",
+  userName: "",
+  happyThing: "",
+  clawName: "",
+  channels: [],
+  goal: "",
+  traits: [],
+  avatarDesc: "",
+  voice: "",
+};
 
 export default function Home() {
+  const [state, setState] = useState<OnboardingState>(defaultState);
+  const [loaded, setLoaded] = useState(false);
+
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (saved) {
+        setState({ ...defaultState, ...JSON.parse(saved) });
+      }
+    } catch {}
+    setLoaded(true);
+  }, []);
+
+  useEffect(() => {
+    if (loaded) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    }
+  }, [state, loaded]);
+
+  const update = useCallback((partial: Partial<OnboardingState>) => {
+    setState((prev) => ({ ...prev, ...partial }));
+  }, []);
+
+  const goBack = useCallback(() => {
+    const idx = SCREEN_ORDER.indexOf(state.screen);
+    if (idx > 0) {
+      let prevIdx = idx - 1;
+      if (SCREEN_ORDER[prevIdx] === "personaDetail" && state.traits.length === 0) {
+        prevIdx--;
+      }
+      update({ screen: SCREEN_ORDER[prevIdx] });
+    }
+  }, [state.screen, state.traits.length, update]);
+
+  if (!loaded) return null;
+
+  const showNav = state.screen !== "landing";
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
+    <div className="relative min-h-screen">
+      {showNav && (
+        <div className="fixed top-0 left-0 right-0 z-50 bg-cream/80 backdrop-blur-md">
+          <div className="max-w-md mx-auto flex items-center px-5 pt-3">
+            <button
+              onClick={goBack}
+              className="text-warm-gray hover:text-foreground text-[13px] font-medium tracking-wide cursor-pointer mr-auto transition-colors"
             >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+              &larr; Back
+            </button>
+            <div className="flex-1">
+              <ProgressDots current={getStepIndex(state.screen)} />
+            </div>
+            <div className="w-12" />
+          </div>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
+      )}
+
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={state.screen}
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -12 }}
+          transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+        >
+          {state.screen === "landing" && (
+            <LandingScreen onNext={() => update({ screen: "register" })} />
+          )}
+          {state.screen === "register" && (
+            <RegisterScreen onNext={() => update({ screen: "nameInput" })} />
+          )}
+          {state.screen === "nameInput" && (
+            <NameInputScreen
+              userName={state.userName}
+              onNext={(name) => update({ userName: name, screen: "happyThing" })}
             />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
+          )}
+          {state.screen === "happyThing" && (
+            <HappyThingScreen
+              happyThing={state.happyThing}
+              onNext={(thing) => update({ happyThing: thing, screen: "personaChoice" })}
+            />
+          )}
+          {state.screen === "personaChoice" && (
+            <PersonaChoiceScreen
+              onCustomize={() => update({ screen: "personaDetail" })}
+              onSkip={() => update({ screen: "loading" })}
+            />
+          )}
+          {state.screen === "personaDetail" && (
+            <PersonaDetailScreen
+              happyThing={state.happyThing}
+              onNext={(data) =>
+                update({
+                  traits: data.traits,
+                  avatarDesc: data.avatarDesc,
+                  voice: data.voice,
+                  screen: "loading",
+                })
+              }
+            />
+          )}
+          {state.screen === "loading" && (
+            <LoadingScreen onDone={() => update({ screen: "nameReveal" })} />
+          )}
+          {state.screen === "nameReveal" && (
+            <NameRevealScreen
+              userName={state.userName}
+              happyThing={state.happyThing}
+              onNext={(name) => update({ clawName: name, screen: "channel" })}
+            />
+          )}
+          {state.screen === "channel" && (
+            <ChannelScreen
+              onNext={(channels) => update({ channels, screen: "goal" })}
+            />
+          )}
+          {state.screen === "goal" && (
+            <GoalScreen
+              userName={state.userName}
+              onNext={(goal) => update({ goal, screen: "quickstart" })}
+            />
+          )}
+          {state.screen === "quickstart" && (
+            <QuickstartScreen userName={state.userName} />
+          )}
+        </motion.div>
+      </AnimatePresence>
     </div>
   );
 }
