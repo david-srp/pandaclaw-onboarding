@@ -13,6 +13,7 @@ import AppDownloadScreen from "@/components/screens/AppDownloadScreen";
 import SmsVerifyScreen from "@/components/screens/SmsVerifyScreen";
 import SetupLoadingScreen from "@/components/screens/SetupLoadingScreen";
 import InviteCodeScreen from "@/components/screens/InviteCodeScreen";
+import PaymentScreen from "@/components/screens/PaymentScreen";
 import EndingScreen from "@/components/screens/EndingScreen";
 
 type Screen =
@@ -21,6 +22,7 @@ type Screen =
   | "inviteCode"
   | "nameInput"
   | "role"
+  | "payment"
   | "channel"
   | "appDownload"
   | "smsVerify"
@@ -33,6 +35,7 @@ const SCREEN_ORDER: Screen[] = [
   "inviteCode",
   "nameInput",
   "role",
+  "payment",
   "channel",
 ];
 
@@ -155,8 +158,11 @@ export default function Home() {
           {state.screen === "role" && (
             <RoleScreen
               userName={state.userName}
-              onNext={(role) => update({ role, screen: "channel" })}
+              onNext={(role) => update({ role, screen: "payment" })}
             />
+          )}
+          {state.screen === "payment" && (
+            <PaymentScreen onNext={() => update({ screen: "channel" })} />
           )}
           {state.screen === "channel" && (
             <ChannelScreen onNext={handleChannelSelect} />
