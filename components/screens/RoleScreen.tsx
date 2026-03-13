@@ -37,7 +37,7 @@ export default function RoleScreen({
   return (
     <div className="flex flex-col items-center justify-center min-h-screen px-6">
       <PandaAvatar size={72} className="mb-5 animate-fade-up" />
-      <SpeechBubble>What role would you like me to play, {userName}?</SpeechBubble>
+      <SpeechBubble>{userName ? `What role would you like me to play, ${userName}?` : "What role would you like me to play?"}</SpeechBubble>
 
       <div className="mt-10 w-full max-w-sm">
         <div className="grid grid-cols-2 gap-2.5 stagger-children">

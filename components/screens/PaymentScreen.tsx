@@ -23,7 +23,7 @@ export default function PaymentScreen({
         {/* Hero: free trial */}
         <div className="text-center animate-fade-up" style={{ animationDelay: "300ms" }}>
           <p className="text-[44px] font-serif font-semibold text-foreground leading-none">7 days free</p>
-          <p className="text-[14px] text-warm-gray mt-2">Then $20/mo · cancel anytime</p>
+          <p className="text-[14px] text-warm-gray mt-2">Then $24/mo · cancel anytime</p>
         </div>
 
         <div className="mt-8 flex justify-center gap-6 animate-fade-up" style={{ animationDelay: "400ms" }}>

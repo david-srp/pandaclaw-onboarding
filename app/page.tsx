@@ -4,65 +4,74 @@ import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import ProgressDots from "@/components/ProgressDots";
-import LandingScreen from "@/components/screens/LandingScreen";
+import SplashScreen from "@/components/screens/SplashScreen";
+import ValuePropsScreen from "@/components/screens/ValuePropsScreen";
+import GreetScreen from "@/components/screens/GreetScreen";
+import NameRoleScreen from "@/components/screens/NameRoleScreen";
 import RegisterScreen from "@/components/screens/RegisterScreen";
-import NameInputScreen from "@/components/screens/NameInputScreen";
-import RoleScreen from "@/components/screens/RoleScreen";
-import ChannelScreen from "@/components/screens/ChannelScreen";
-import AppDownloadScreen from "@/components/screens/AppDownloadScreen";
-import SmsVerifyScreen from "@/components/screens/SmsVerifyScreen";
-import SetupLoadingScreen from "@/components/screens/SetupLoadingScreen";
 import InviteCodeScreen from "@/components/screens/InviteCodeScreen";
-import PaymentScreen from "@/components/screens/PaymentScreen";
-import EndingScreen from "@/components/screens/EndingScreen";
+import NotificationPermScreen from "@/components/screens/NotificationPermScreen";
+import IosPaywallScreen from "@/components/screens/IosPaywallScreen";
+import SetupLoadingScreen from "@/components/screens/SetupLoadingScreen";
+import AppHomeScreen from "@/components/screens/AppHomeScreen";
+
+/*
+  iOS Flow:
+  1. Splash         — brand impression (auto)
+  2. Hero           — visual demo + Get Started / Sign In
+  3. Name + Role    — personalization (invest first)
+  4. Register       — Apple / Google / Email
+  5. Invite Code    — access gate
+  6. Notifications  — push permission
+  7. Paywall        — maximum commitment before asking for $$$
+  8. Setup Loading  — "preparing your experience..."
+  → Chat
+*/
 
 type Screen =
-  | "landing"
+  | "splash"
+  | "hero"
+  | "greet"
+  | "nameRole"
   | "register"
   | "inviteCode"
-  | "nameInput"
-  | "role"
-  | "payment"
-  | "channel"
-  | "appDownload"
-  | "smsVerify"
+  | "notifications"
+  | "paywall"
   | "setupLoading"
-  | "ending";
+  | "appHome";
 
 const SCREEN_ORDER: Screen[] = [
-  "landing",
+  "splash",
+  "hero",
+  "greet",
+  "nameRole",
   "register",
   "inviteCode",
-  "nameInput",
-  "role",
-  "payment",
-  "channel",
+  "notifications",
+  "paywall",
 ];
 
+// Progress dots start from nameRole (index 0) through paywall (index 4)
 function getStepIndex(screen: Screen): number {
-  if (["appDownload", "smsVerify", "setupLoading", "ending"].includes(screen)) {
-    return SCREEN_ORDER.length - 2;
-  }
+  if (screen === "setupLoading") return 4;
   const idx = SCREEN_ORDER.indexOf(screen);
-  return idx <= 0 ? 0 : idx - 1;
+  return Math.max(0, idx - 3); // greet/hero/splash are before dots
 }
 
-const TOTAL_STEPS = SCREEN_ORDER.length - 1;
+const TOTAL_STEPS = 5;
 
-const STORAGE_KEY = "pandaclaw-onboarding";
+const STORAGE_KEY = "pandaclaw-onboarding-ios";
 
 interface OnboardingState {
   screen: Screen;
   userName: string;
   role: string;
-  channels: string[];
 }
 
 const defaultState: OnboardingState = {
-  screen: "landing",
+  screen: "splash",
   userName: "",
   role: "",
-  channels: [],
 };
 
 export default function Home() {
@@ -86,32 +95,25 @@ export default function Home() {
   }, []);
 
   const goBack = useCallback(() => {
-    if (["appDownload", "smsVerify", "setupLoading", "ending"].includes(state.screen)) {
-      update({ screen: "channel" });
+    if (state.screen === "setupLoading") {
+      update({ screen: "paywall" });
+      return;
+    }
+    if (state.screen === "nameRole") {
+      // nameRole goes back to hero (skip greet)
+      update({ screen: "hero" });
       return;
     }
     const idx = SCREEN_ORDER.indexOf(state.screen);
-    if (idx > 0) {
+    if (idx > 3) {
       update({ screen: SCREEN_ORDER[idx - 1] });
     }
   }, [state.screen, update]);
 
-  const handleChannelSelect = useCallback(
-    (channel: string) => {
-      if (channel === "app") {
-        update({ channels: [channel], screen: "appDownload" });
-      } else if (channel === "sms") {
-        update({ channels: [channel], screen: "smsVerify" });
-      } else {
-        update({ channels: [channel], screen: "setupLoading" });
-      }
-    },
-    [update]
-  );
-
   if (!loaded) return null;
 
-  const showNav = state.screen !== "landing" && state.screen !== "setupLoading" && state.screen !== "ending";
+  // Nav bar: only show for nameRole through notifications (NOT paywall)
+  const showNav = !["splash", "hero", "greet", "paywall", "setupLoading", "appHome"].includes(state.screen);
 
   return (
     <div className="relative min-h-screen">
@@ -135,56 +137,67 @@ export default function Home() {
       <AnimatePresence mode="wait">
         <motion.div
           key={state.screen}
-          initial={{ opacity: 0, y: 16 }}
+          initial={{ opacity: 0, y: state.screen === "splash" ? 0 : 16 }}
           animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -12 }}
-          transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+          exit={{ opacity: 0, y: state.screen === "splash" ? 0 : -12 }}
+          transition={{ duration: state.screen === "splash" ? 0.5 : 0.35, ease: [0.16, 1, 0.3, 1] }}
         >
-          {state.screen === "landing" && (
-            <LandingScreen onNext={() => update({ screen: "register" })} />
+          {/* 1. Splash */}
+          {state.screen === "splash" && (
+            <SplashScreen onDone={() => update({ screen: "hero" })} />
           )}
+
+          {/* 2. Hero — visual demo + CTA */}
+          {state.screen === "hero" && (
+            <ValuePropsScreen
+              onNext={() => update({ screen: "greet" })}
+              onSignIn={() => update({ screen: "register" })}
+            />
+          )}
+
+          {/* 3. Greet — panda says hi */}
+          {state.screen === "greet" && (
+            <GreetScreen onDone={() => update({ screen: "nameRole" })} />
+          )}
+
+          {/* 4. Name + Role — personalization first */}
+          {state.screen === "nameRole" && (
+            <NameRoleScreen
+              onNext={(name, role) => update({ userName: name, role, screen: "register" })}
+            />
+          )}
+
+          {/* 4. Register — Apple / Google / Email */}
           {state.screen === "register" && (
             <RegisterScreen onNext={() => update({ screen: "inviteCode" })} />
           )}
+
+          {/* 5. Invite Code */}
           {state.screen === "inviteCode" && (
-            <InviteCodeScreen onNext={() => update({ screen: "nameInput" })} />
+            <InviteCodeScreen onNext={() => update({ screen: "notifications" })} />
           )}
-          {state.screen === "nameInput" && (
-            <NameInputScreen
-              userName={state.userName}
-              onNext={(name) => update({ userName: name, screen: "role" })}
+
+          {/* 6. Notifications */}
+          {state.screen === "notifications" && (
+            <NotificationPermScreen userName={state.userName} onNext={() => update({ screen: "paywall" })} />
+          )}
+
+          {/* 7. Paywall — last step before entering */}
+          {state.screen === "paywall" && (
+            <IosPaywallScreen
+              onNext={() => update({ screen: "setupLoading" })}
+              onDismiss={() => update({ screen: "setupLoading" })}
             />
           )}
-          {state.screen === "role" && (
-            <RoleScreen
-              userName={state.userName}
-              onNext={(role) => update({ role, screen: "payment" })}
-            />
-          )}
-          {state.screen === "payment" && (
-            <PaymentScreen onNext={() => update({ screen: "channel" })} />
-          )}
-          {state.screen === "channel" && (
-            <ChannelScreen onNext={handleChannelSelect} />
-          )}
-          {state.screen === "appDownload" && (
-            <AppDownloadScreen onBack={() => update({ screen: "channel" })} />
-          )}
-          {state.screen === "smsVerify" && (
-            <SmsVerifyScreen
-              onDone={() => update({ screen: "ending" })}
-              onBack={() => update({ screen: "channel" })}
-            />
-          )}
+
+          {/* 8. Setup Loading → App Home */}
           {state.screen === "setupLoading" && (
-            <SetupLoadingScreen onDone={() => update({ screen: "ending" })} />
+            <SetupLoadingScreen onDone={() => update({ screen: "appHome" })} />
           )}
-          {state.screen === "ending" && (
-            <EndingScreen
-              userName={state.userName}
-              channel={state.channels[0] || "web"}
-              onStart={() => router.push("/app")}
-            />
+
+          {/* 9. App Home — use cases + paywall re-trigger */}
+          {state.screen === "appHome" && (
+            <AppHomeScreen userName={state.userName} role={state.role} />
           )}
         </motion.div>
       </AnimatePresence>

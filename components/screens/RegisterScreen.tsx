@@ -1,14 +1,14 @@
 "use client";
 
+import { useState } from "react";
 import PandaAvatar from "../PandaAvatar";
-import SpeechBubble from "../SpeechBubble";
 
-export default function RegisterScreen({ onNext }: { onNext: () => void }) {
-  const options = [
-    { icon: "google", label: "Continue with Google" },
-    { icon: "apple", label: "Continue with Apple" },
-    { icon: "mail", label: "Continue with Email" },
-  ];
+export default function RegisterScreen({
+  onNext,
+}: {
+  onNext: () => void;
+}) {
+  const [email, setEmail] = useState("");
 
   const iconMap: Record<string, React.ReactNode> = {
     google: (
@@ -24,34 +24,70 @@ export default function RegisterScreen({ onNext }: { onNext: () => void }) {
         <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z" />
       </svg>
     ),
-    mail: (
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-        <rect x="2" y="4" width="20" height="16" rx="2" />
-        <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
-      </svg>
-    ),
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen px-6">
-      <PandaAvatar size={88} className="mb-5 animate-fade-up" />
-      <SpeechBubble>I cannot wait to meet you.</SpeechBubble>
+    <div className="flex flex-col min-h-screen px-6 pt-16 pb-0">
+      {/* Upper area — all content pushed to top for keyboard clearance */}
+      <div className="pt-4 flex flex-col items-center">
+        <PandaAvatar size={56} className="mb-4 animate-fade-up" />
 
-      <h2 className="font-serif text-[28px] font-medium mt-10 mb-8 animate-fade-up" style={{ animationDelay: "300ms" }}>
-        Create your account
-      </h2>
+        <h2
+          className="font-serif text-[26px] font-semibold text-center leading-tight mb-1 animate-fade-up"
+          style={{ animationDelay: "150ms" }}
+        >
+          Log in to your account
+        </h2>
+        <p
+          className="text-warm-gray text-[14px] text-center mb-6 animate-fade-up"
+          style={{ animationDelay: "250ms" }}
+        >
+          Create an account or sign in to continue
+        </p>
 
-      <div className="flex flex-col gap-3 w-full max-w-sm stagger-children">
-        {options.map((opt) => (
+        <div className="flex flex-col gap-3 w-full max-w-sm stagger-children">
+          {/* Google */}
           <button
-            key={opt.label}
             onClick={onNext}
-            className="card-elevated flex items-center gap-4 px-6 py-4 w-full cursor-pointer text-left"
+            className="card-elevated flex items-center gap-4 px-6 py-3.5 w-full cursor-pointer text-left"
           >
-            <span className="text-foreground/70">{iconMap[opt.icon]}</span>
-            <span className="font-medium text-[15px]">{opt.label}</span>
+            <span className="text-foreground/70">{iconMap.google}</span>
+            <span className="font-medium text-[15px]">Continue with Google</span>
           </button>
-        ))}
+
+          {/* Apple */}
+          <button
+            onClick={onNext}
+            className="card-elevated flex items-center gap-4 px-6 py-3.5 w-full cursor-pointer text-left"
+          >
+            <span className="text-foreground/70">{iconMap.apple}</span>
+            <span className="font-medium text-[15px]">Continue with Apple</span>
+          </button>
+
+          {/* Divider */}
+          <div className="flex items-center gap-3 my-0.5">
+            <div className="flex-1 h-px bg-cream-dark/40" />
+            <span className="text-warm-gray/50 text-[12px]">or</span>
+            <div className="flex-1 h-px bg-cream-dark/40" />
+          </div>
+
+          {/* Email input + button inline */}
+          <input
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && email.includes("@") && onNext()}
+            placeholder="Email address"
+            className="input-editorial text-[15px]"
+          />
+          <button
+            onClick={onNext}
+            disabled={!email.includes("@")}
+            className="card-elevated flex items-center justify-center px-6 py-3.5 w-full cursor-pointer text-left disabled:opacity-40 disabled:cursor-not-allowed"
+          >
+            <span className="font-medium text-[15px]">Continue with email</span>
+          </button>
+        </div>
       </div>
     </div>
   );
