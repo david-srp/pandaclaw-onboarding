@@ -2,7 +2,6 @@
 
 import { useState, useRef, useEffect, useCallback } from "react";
 import PandaAvatar from "../PandaAvatar";
-import SpeechBubble from "../SpeechBubble";
 
 type Step = "phone" | "code" | "loading";
 
@@ -91,8 +90,8 @@ export default function SmsVerifyScreen({
   // Loading screen
   if (step === "loading") {
     return (
-      <div className="flex flex-col items-center justify-center min-h-screen px-6">
-        <PandaAvatar size={88} animate className="mb-8" />
+      <div className="flex flex-col items-center justify-center px-8 py-16">
+        <PandaAvatar size={80} animate className="mb-8" />
 
         <p className="text-foreground font-serif text-xl italic mb-8 animate-breathe">
           {loadingMessages[msgIndex]}
@@ -111,16 +110,24 @@ export default function SmsVerifyScreen({
   // Verification code screen
   if (step === "code") {
     return (
-      <div className="flex flex-col items-center justify-center min-h-screen px-6">
-        <PandaAvatar size={72} className="mb-5 animate-fade-up" />
-        <SpeechBubble>Enter the code I sent you</SpeechBubble>
+      <div className="flex flex-col items-center px-8 py-10">
+        <PandaAvatar size={64} className="mb-4 animate-fade-up" />
 
-        <p className="mt-4 text-warm-gray text-[13px] animate-fade-up" style={{ animationDelay: "200ms" }}>
+        <h2
+          className="font-serif text-[26px] font-semibold text-foreground text-center animate-fade-up"
+          style={{ animationDelay: "100ms" }}
+        >
+          Enter verification code
+        </h2>
+        <p
+          className="mt-2 text-warm-gray text-[14px] animate-fade-up"
+          style={{ animationDelay: "200ms" }}
+        >
           Sent to {phone}
         </p>
 
         <div
-          className="mt-10 flex gap-3 animate-fade-up"
+          className="mt-8 flex gap-3 animate-fade-up"
           style={{ animationDelay: "300ms" }}
           onPaste={handleCodePaste}
         >
@@ -135,6 +142,7 @@ export default function SmsVerifyScreen({
               onChange={(e) => handleCodeChange(i, e.target.value)}
               onKeyDown={(e) => handleCodeKeyDown(i, e)}
               className="w-12 h-14 text-center text-xl font-semibold rounded-xl border-2 border-cream-dark bg-white focus:border-accent focus:outline-none transition-colors"
+              autoFocus={i === 0}
             />
           ))}
         </div>
@@ -154,23 +162,37 @@ export default function SmsVerifyScreen({
 
   // Phone input screen
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen px-6">
-      <PandaAvatar size={72} className="mb-5 animate-fade-up" />
-      <SpeechBubble>What&apos;s your phone number?</SpeechBubble>
+    <div className="flex flex-col items-center px-8 py-10">
+      <PandaAvatar size={64} className="mb-4 animate-fade-up" />
 
-      <div className="mt-12 w-full max-w-sm animate-fade-up" style={{ animationDelay: "400ms" }}>
+      <h2
+        className="font-serif text-[28px] font-semibold text-foreground text-center animate-fade-up"
+        style={{ animationDelay: "100ms" }}
+      >
+        What&apos;s your phone number?
+      </h2>
+      <p
+        className="text-warm-gray text-[14px] text-center mt-2 animate-fade-up"
+        style={{ animationDelay: "200ms" }}
+      >
+        We&apos;ll send you a verification code via SMS
+      </p>
+
+      <div className="mt-8 w-full max-w-sm animate-fade-up" style={{ animationDelay: "300ms" }}>
+        <label className="block text-[13px] font-medium text-foreground mb-2">Phone number</label>
         <input
           type="tel"
           value={phone}
           onChange={(e) => setPhone(e.target.value)}
           placeholder="+1 (555) 000-0000"
-          className="input-editorial text-center text-lg"
+          className="w-full bg-white border border-cream-dark rounded-xl px-4 py-3 text-[16px] focus:border-accent transition-colors outline-none"
+          autoFocus
         />
 
         <button
           onClick={() => phone.trim().length >= 6 && setStep("code")}
           disabled={phone.trim().length < 6}
-          className="mt-8 w-full btn-primary"
+          className="mt-6 w-full btn-primary"
         >
           Send verification code
         </button>

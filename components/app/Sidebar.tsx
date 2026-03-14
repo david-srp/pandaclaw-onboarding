@@ -3,26 +3,29 @@
 import { motion } from "framer-motion";
 import {
   MessageSquare,
-  ListChecks,
-  BookOpen,
+  CalendarDays,
+  Fingerprint,
+  Puzzle,
   ChevronLeft,
   ChevronRight,
+  Download,
 } from "lucide-react";
 import PandaAvatar from "../PandaAvatar";
 
-export type Tab = "chat" | "tasks" | "diary" | "profile";
+export type Tab = "chat" | "schedule" | "identity" | "profile";
 
 interface SidebarProps {
   activeTab: Tab;
   onTabChange: (tab: Tab) => void;
   collapsed: boolean;
   onToggle: () => void;
+  userName?: string;
 }
 
 const tabs: { id: Tab; label: string; icon: React.ReactNode }[] = [
   { id: "chat", label: "Chat", icon: <MessageSquare size={20} /> },
-  { id: "tasks", label: "Tasks", icon: <ListChecks size={20} /> },
-  { id: "diary", label: "Diary", icon: <BookOpen size={20} /> },
+  { id: "schedule", label: "Schedule", icon: <CalendarDays size={20} /> },
+  { id: "identity", label: "Identity", icon: <Fingerprint size={20} /> },
 ];
 
 export default function Sidebar({
@@ -30,7 +33,10 @@ export default function Sidebar({
   onTabChange,
   collapsed,
   onToggle,
+  userName,
 }: SidebarProps) {
+  const initial = userName ? userName.charAt(0).toUpperCase() : "U";
+
   return (
     <motion.aside
       initial={false}
@@ -77,8 +83,21 @@ export default function Sidebar({
         })}
       </nav>
 
-      {/* Profile + collapse */}
+      {/* Skills + Profile + collapse */}
       <div className="border-t border-cream-dark p-2 space-y-1">
+        {/* Skills */}
+        <button
+          className="flex items-center gap-3 w-full rounded-xl px-3 py-2.5 text-warm-gray hover:bg-cream-dark/50 hover:text-foreground transition-all cursor-pointer"
+        >
+          <Puzzle size={20} />
+          {!collapsed && (
+            <span className="text-[14px] font-medium whitespace-nowrap">
+              Skills
+            </span>
+          )}
+        </button>
+
+        {/* Profile */}
         <button
           onClick={() => onTabChange("profile")}
           className={`flex items-center gap-3 w-full rounded-xl px-3 py-2.5 transition-all cursor-pointer ${
@@ -88,12 +107,17 @@ export default function Sidebar({
           }`}
         >
           <div className="w-5 h-5 rounded-full bg-accent flex items-center justify-center">
-            <span className="text-white text-[10px] font-semibold">U</span>
+            <span className="text-white text-[10px] font-semibold">{initial}</span>
           </div>
           {!collapsed && (
-            <span className="text-[14px] font-medium whitespace-nowrap">
-              Profile
-            </span>
+            <div className="flex flex-col items-start">
+              <span className="text-[14px] font-medium whitespace-nowrap leading-tight">
+                {userName || "Profile"}
+              </span>
+              <span className="text-[10px] text-warm-gray whitespace-nowrap">
+                Free Plan
+              </span>
+            </div>
           )}
         </button>
 

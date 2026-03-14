@@ -1,6 +1,6 @@
 "use client";
 
-import { MessageSquare, ListChecks, BookOpen, User } from "lucide-react";
+import { MessageSquare, CalendarDays, Fingerprint, User } from "lucide-react";
 import type { Tab } from "./Sidebar";
 
 interface BottomNavProps {
@@ -10,8 +10,8 @@ interface BottomNavProps {
 
 const tabs: { id: Tab; label: string; icon: React.ReactNode }[] = [
   { id: "chat", label: "Chat", icon: <MessageSquare size={22} /> },
-  { id: "tasks", label: "Tasks", icon: <ListChecks size={22} /> },
-  { id: "diary", label: "Diary", icon: <BookOpen size={22} /> },
+  { id: "schedule", label: "Schedule", icon: <CalendarDays size={22} /> },
+  { id: "identity", label: "Identity", icon: <Fingerprint size={22} /> },
   { id: "profile", label: "Profile", icon: <User size={22} /> },
 ];
 

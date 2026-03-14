@@ -12,6 +12,8 @@ import {
   CalendarDays,
   MessageCircle,
 } from "lucide-react";
+import ChannelTabBar from "./ChannelTabBar";
+import { useOnboarding } from "@/lib/onboarding-store";
 
 interface ChatAreaProps {
   onToggleFiles: () => void;
@@ -32,7 +34,7 @@ const historyItems = [
   { id: "4", title: "Goal planning session", date: "Mar 7" },
 ];
 
-const STORAGE_KEY = "pandaclaw-onboarding";
+const STORAGE_KEY = "pandaclaw-web-onboarding";
 
 function getTasksForRole(role: string) {
   const lower = role.toLowerCase();
@@ -90,36 +92,27 @@ export default function ChatArea({
   onToggleFiles,
   filesOpen,
 }: ChatAreaProps) {
+  const { state: onboardingState } = useOnboarding();
   const [historyOpen, setHistoryOpen] = useState(false);
   const [inputValue, setInputValue] = useState("");
-  const [userName, setUserName] = useState("");
-  const [role, setRole] = useState("");
   const [messages, setMessages] = useState<Message[]>([]);
 
-  useEffect(() => {
-    try {
-      const saved = localStorage.getItem(STORAGE_KEY);
-      if (saved) {
-        const data = JSON.parse(saved);
-        const name = data.userName || "friend";
-        const userRole = data.role || "";
-        setUserName(name);
-        setRole(userRole);
+  const userName = onboardingState.userName || "friend";
+  const role = onboardingState.role || "";
 
-        setMessages([
-          {
-            id: "greeting",
-            type: "ai",
-            content: `Hey ${name}! 👋 I'm your Claw — ready to help whenever you need me. Based on what you told me, here are a few things we can start with:`,
-          },
-          {
-            id: "tasks",
-            type: "tasks",
-          },
-        ]);
-      }
-    } catch {}
-  }, []);
+  useEffect(() => {
+    setMessages([
+      {
+        id: "greeting",
+        type: "ai",
+        content: `Hey ${userName}! 👋 I'm your Claw — ready to help whenever you need me. Based on what you told me, here are a few things we can start with:`,
+      },
+      {
+        id: "tasks",
+        type: "tasks",
+      },
+    ]);
+  }, [userName]);
 
   const tasks = getTasksForRole(role);
 
@@ -138,58 +131,7 @@ export default function ChatArea({
   return (
     <div className="flex-1 flex flex-col h-full min-w-0">
       {/* Top bar */}
-      <div className="flex items-center gap-2 px-4 h-12 border-b border-cream-dark shrink-0">
-        {!filesOpen && (
-          <button
-            onClick={onToggleFiles}
-            className="hidden md:flex items-center gap-1.5 text-warm-gray hover:text-foreground text-[13px] font-medium transition-colors cursor-pointer"
-          >
-            <FolderOpen size={16} />
-            Files
-          </button>
-        )}
-        <div className="flex-1" />
-        <button
-          onClick={() => setHistoryOpen(!historyOpen)}
-          className={`flex items-center gap-1.5 text-[13px] font-medium transition-colors cursor-pointer ${
-            historyOpen ? "text-accent" : "text-warm-gray hover:text-foreground"
-          }`}
-        >
-          <History size={16} />
-          History
-          <ChevronDown
-            size={14}
-            className={`transition-transform ${historyOpen ? "rotate-180" : ""}`}
-          />
-        </button>
-      </div>
-
-      {/* History panel */}
-      <AnimatePresence>
-        {historyOpen && (
-          <motion.div
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: "auto", opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
-            className="border-b border-cream-dark overflow-hidden bg-cream/50"
-          >
-            <div className="px-4 py-3 space-y-1">
-              {historyItems.map((item) => (
-                <div
-                  key={item.id}
-                  className="flex items-center justify-between px-3 py-2 rounded-xl hover:bg-cream-dark/50 cursor-pointer transition-colors"
-                >
-                  <span className="text-[13px] text-foreground font-medium">
-                    {item.title}
-                  </span>
-                  <span className="text-[11px] text-warm-gray">{item.date}</span>
-                </div>
-              ))}
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      <ChannelTabBar />
 
       {/* Messages */}
       <div className="flex-1 overflow-y-auto px-4 md:px-8 py-6 space-y-5">

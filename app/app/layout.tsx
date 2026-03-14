@@ -1,3 +1,5 @@
+import { OnboardingProvider } from "@/lib/onboarding-store";
+
 export default function AppLayout({ children }: { children: React.ReactNode }) {
-  return <>{children}</>;
+  return <OnboardingProvider>{children}</OnboardingProvider>;
 }

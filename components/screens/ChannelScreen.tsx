@@ -1,7 +1,6 @@
 "use client";
 
 import PandaAvatar from "../PandaAvatar";
-import SpeechBubble from "../SpeechBubble";
 
 const channels = [
   {
@@ -44,25 +43,37 @@ export default function ChannelScreen({
   onNext: (channel: string) => void;
 }) {
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen px-6">
-      <PandaAvatar size={72} className="mb-5 animate-fade-up" />
-      <SpeechBubble>When I finish a task or have an update, how should I reach you?</SpeechBubble>
+    <div className="flex flex-col items-center px-8 py-10">
+      <PandaAvatar size={64} className="mb-4 animate-fade-up" />
 
-      <div className="mt-10 flex flex-col gap-3 w-full max-w-sm stagger-children">
+      <h2
+        className="font-serif text-[26px] font-semibold text-foreground text-center animate-fade-up"
+        style={{ animationDelay: "100ms" }}
+      >
+        How should I reach you?
+      </h2>
+      <p
+        className="text-warm-gray text-[14px] text-center mt-2 max-w-sm animate-fade-up"
+        style={{ animationDelay: "200ms" }}
+      >
+        When I finish a task or have an update, where should I notify you?
+      </p>
+
+      <div className="mt-6 flex flex-col gap-3 w-full max-w-md stagger-children">
         {channels.map((ch) => (
           <button
             key={ch.key}
             onClick={() => onNext(ch.key)}
-            className="flex items-center gap-4 rounded-2xl px-6 py-5 border-2 border-cream-dark bg-white hover:border-accent/30 hover:bg-accent-light/30 transition-all text-left cursor-pointer group"
+            className="flex items-center gap-4 rounded-2xl px-5 py-4 border-2 border-cream-dark bg-white hover:border-accent/30 hover:bg-accent-light/30 transition-all text-left cursor-pointer group"
           >
-            <span className="text-warm-gray group-hover:text-accent transition-colors">
+            <div className="w-10 h-10 rounded-xl bg-cream flex items-center justify-center shrink-0 text-warm-gray group-hover:text-accent group-hover:bg-accent-light transition-colors">
               {ch.icon}
-            </span>
+            </div>
             <div className="flex-1">
               <span className="font-medium text-[15px] block">{ch.label}</span>
               <span className="text-warm-gray text-[13px]">{ch.desc}</span>
             </div>
-            <svg className="text-warm-gray-light group-hover:text-accent transition-colors" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <svg className="text-warm-gray-light group-hover:text-accent transition-colors shrink-0" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <polyline points="9 18 15 12 9 6" />
             </svg>
           </button>
