@@ -21,10 +21,10 @@ export default function QuickstartScreen({ userName }: { userName: string }) {
       <div className="flex flex-col items-center justify-center min-h-screen px-6 text-center">
         <PandaAvatar size={100} animate className="mb-8 animate-fade-up" />
 
-        <h2 className="font-serif text-[36px] md:text-[42px] font-medium leading-tight mb-4 animate-fade-up" style={{ animationDelay: "200ms" }}>
+        <h2 className="text-[36px] md:text-[42px] font-semibold leading-tight mb-4 animate-fade-up" style={{ animationDelay: "200ms" }}>
           You&apos;re all set,
           <br />
-          <span className="italic text-accent">{userName}</span>
+          <span className="text-warm-gray">{userName}</span>
         </h2>
 
         <p

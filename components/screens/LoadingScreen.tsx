@@ -36,7 +36,7 @@ export default function LoadingScreen({ onDone }: { onDone: () => void }) {
     <div className="flex flex-col items-center justify-center min-h-screen px-6">
       <PandaAvatar size={88} animate className="mb-8" />
 
-      <p className="text-foreground font-serif text-xl italic mb-8 animate-breathe">
+      <p className="text-foreground text-lg mb-8 animate-breathe">
         {messages[msgIndex]}
       </p>
 

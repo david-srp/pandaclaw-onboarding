@@ -37,7 +37,7 @@ export default function NameRevealScreen({
     return (
       <div className="flex flex-col items-center justify-center min-h-screen px-6">
         <PandaAvatar size={72} animate className="mb-6" />
-        <p className="text-warm-gray font-serif text-lg italic animate-breathe">Finding the perfect name...</p>
+        <p className="text-warm-gray text-lg animate-breathe">Finding the perfect name...</p>
       </div>
     );
   }
@@ -52,8 +52,8 @@ export default function NameRevealScreen({
       >
         {userName}, I have been thinking...
         <br />
-        <span className="italic">my name is </span>
-        <span className="text-accent italic">{clawName}</span>
+        <span>my name is </span>
+        <span className="text-warm-gray">{clawName}</span>
       </h2>
 
       <p

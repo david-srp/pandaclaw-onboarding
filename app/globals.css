@@ -1,16 +1,16 @@
-@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,700&family=Inter:wght@300;400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 @import "tailwindcss";
 
 :root {
-  --background: #FAF7F2;
-  --foreground: #1a1a17;
-  --accent: #D4714E;
-  --accent-hover: #c0623f;
-  --accent-light: #D4714E18;
-  --cream: #FAF7F2;
-  --cream-dark: #EDE8DF;
-  --warm-gray: #8a8578;
-  --warm-gray-light: #b5ad9e;
+  --background: #FAFAFA;
+  --foreground: #1a1a1a;
+  --accent: #1a1a1a;
+  --accent-hover: #333333;
+  --accent-light: #1a1a1a0a;
+  --cream: #F5F5F5;
+  --cream-dark: #E8E8E8;
+  --warm-gray: #6B7280;
+  --warm-gray-light: #9CA3AF;
 }
 
 @theme inline {
@@ -23,38 +23,18 @@
   --color-cream-dark: var(--cream-dark);
   --color-warm-gray: var(--warm-gray);
   --color-warm-gray-light: var(--warm-gray-light);
-  --font-sans: 'Inter', sans-serif;
-  --font-serif: 'Cormorant Garamond', serif;
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-serif: 'Inter', system-ui, -apple-system, sans-serif;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: 'Inter', sans-serif;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
   font-weight: 400;
   letter-spacing: -0.01em;
-}
-
-/* Paper grain texture */
-body::before {
-  content: '';
-  position: fixed;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-  opacity: 0.025;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
-  background-size: 256px 256px;
-}
-
-/* Soft vignette */
-body::after {
-  content: '';
-  position: fixed;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-  background: radial-gradient(ellipse at center, transparent 50%, rgba(30, 25, 18, 0.04) 100%);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 ::selection {
@@ -67,14 +47,13 @@ html {
 }
 
 .font-serif {
-  font-family: 'Cormorant Garamond', serif;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
   letter-spacing: -0.02em;
 }
 
 input::placeholder,
 textarea::placeholder {
   color: var(--warm-gray-light);
-  font-style: italic;
 }
 
 input:focus,
@@ -107,7 +86,7 @@ textarea:focus {
   to { opacity: 1; transform: translateY(0); }
 }
 .animate-fade-up {
-  animation: fade-up 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation: fade-up 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
 @keyframes gentle-float {
@@ -128,7 +107,7 @@ textarea:focus {
 
 /* Staggered children */
 .stagger-children > * {
-  animation: fade-up 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation: fade-up 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 .stagger-children > *:nth-child(1) { animation-delay: 0ms; }
 .stagger-children > *:nth-child(2) { animation-delay: 80ms; }
@@ -140,21 +119,21 @@ textarea:focus {
 
 /* Shared component classes */
 .btn-primary {
-  background: var(--accent);
+  background: var(--foreground);
   color: white;
   font-weight: 500;
-  letter-spacing: 0.02em;
-  border-radius: 9999px;
+  letter-spacing: 0em;
+  border-radius: 12px;
   padding: 14px 32px;
   font-size: 15px;
-  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: all 0.2s ease;
   cursor: pointer;
   border: none;
 }
 .btn-primary:hover {
   background: var(--accent-hover);
   transform: translateY(-1px);
-  box-shadow: 0 4px 20px rgba(212, 113, 78, 0.25);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 .btn-primary:active {
   transform: translateY(0);
@@ -170,28 +149,28 @@ textarea:focus {
   background: transparent;
   color: var(--foreground);
   font-weight: 500;
-  letter-spacing: 0.02em;
-  border-radius: 9999px;
+  letter-spacing: 0em;
+  border-radius: 12px;
   padding: 14px 32px;
   font-size: 15px;
-  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: all 0.2s ease;
   cursor: pointer;
   border: 1px solid var(--cream-dark);
 }
 .btn-secondary:hover {
-  border-color: var(--accent);
-  color: var(--accent);
+  border-color: var(--foreground);
+  background: var(--cream);
 }
 
 .card-elevated {
   background: white;
   border: 1px solid var(--cream-dark);
-  border-radius: 14px;
-  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  border-radius: 16px;
+  transition: all 0.2s ease;
 }
 .card-elevated:hover {
-  border-color: var(--accent);
-  box-shadow: 0 2px 16px rgba(212, 113, 78, 0.08);
+  border-color: #D1D5DB;
+  box-shadow: 0 1px 8px rgba(0, 0, 0, 0.04);
   transform: translateY(-1px);
 }
 
@@ -201,24 +180,24 @@ textarea:focus {
   border: none;
   border-bottom: 1.5px solid var(--cream-dark);
   padding: 12px 0;
-  font-family: 'Cormorant Garamond', serif;
-  font-size: 28px;
-  font-weight: 400;
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 24px;
+  font-weight: 500;
   color: var(--foreground);
   text-align: center;
   transition: border-color 0.3s ease;
 }
 .input-editorial:focus {
-  border-color: var(--accent);
+  border-color: var(--foreground);
 }
 
 .textarea-editorial {
   width: 100%;
   background: white;
   border: 1px solid var(--cream-dark);
-  border-radius: 14px;
+  border-radius: 16px;
   padding: 20px;
-  font-family: 'Inter', sans-serif;
+  font-family: 'Inter', system-ui, sans-serif;
   font-size: 15px;
   line-height: 1.7;
   color: var(--foreground);
@@ -226,7 +205,7 @@ textarea:focus {
   transition: border-color 0.3s ease;
 }
 .textarea-editorial:focus {
-  border-color: var(--accent);
+  border-color: var(--foreground);
 }
 
 /* Modal overlay */
@@ -234,9 +213,9 @@ textarea:focus {
   position: fixed;
   inset: 0;
   z-index: 100;
-  background: rgba(0, 0, 0, 0.35);
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
 }
 
 .modal-container {

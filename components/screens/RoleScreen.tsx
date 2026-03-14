@@ -51,46 +51,37 @@ export default function RoleScreen({
   };
 
   return (
-    <div className="flex flex-col px-8 py-8">
-      <div className="text-center mb-6">
+    <div className="flex flex-col px-6 py-6">
+      <div className="text-center mb-4">
         <h2
-          className="font-serif text-[26px] font-semibold text-foreground animate-fade-up"
+          className="font-serif text-[24px] font-semibold text-foreground animate-fade-up"
         >
           What do you need help with{userName ? `, ${userName}` : ""}?
         </h2>
-        <p
-          className="text-warm-gray text-[14px] mt-2 max-w-md mx-auto animate-fade-up"
-          style={{ animationDelay: "100ms" }}
-        >
-          This helps us suggest the right tasks to get you started.
-          Pick as many as you like — you can always change later.
-        </p>
       </div>
 
-      {/* Category grid — 2 cols on desktop for better scanning */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5 mb-4 stagger-children">
+      {/* Category grid */}
+      <div className="grid grid-cols-2 gap-2 mb-3 stagger-children">
         {categories.map((cat) => {
           const isSelected = selected.has(cat.label);
           return (
             <button
               key={cat.label}
               onClick={() => toggle(cat.label)}
-              className={`flex items-center gap-3.5 rounded-2xl px-5 py-4 border-2 transition-all text-left cursor-pointer ${
+              className={`flex items-center gap-3 rounded-xl px-4 py-3 border-2 transition-all text-left cursor-pointer ${
                 isSelected
                   ? "border-accent bg-accent-light"
                   : "border-cream-dark bg-white hover:border-accent/30"
               }`}
             >
-              <span className="text-[24px] shrink-0">{cat.emoji}</span>
+              <span className="text-[20px] shrink-0">{cat.emoji}</span>
               <div className="flex-1 min-w-0">
-                <span className="font-semibold text-[14px] text-foreground block">{cat.label}</span>
-                <span className="text-[12px] text-warm-gray">{cat.tags}</span>
+                <span className="font-semibold text-[13px] text-foreground block">{cat.label}</span>
+                <span className="text-[11px] text-warm-gray">{cat.tags}</span>
               </div>
-              {isSelected && (
-                <svg className="text-accent shrink-0" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                  <polyline points="20 6 9 17 4 12" />
-                </svg>
-              )}
+              <svg className={`shrink-0 transition-opacity ${isSelected ? "text-accent opacity-100" : "opacity-0"}`} width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="20 6 9 17 4 12" />
+              </svg>
             </button>
           );
         })}
@@ -98,7 +89,7 @@ export default function RoleScreen({
 
       <button
         onClick={handleSkip}
-        className="text-warm-gray hover:text-foreground text-[13px] font-medium cursor-pointer transition-colors text-center py-2 mb-2 animate-fade-up"
+        className="text-warm-gray hover:text-foreground text-[13px] font-medium cursor-pointer transition-colors text-center py-1.5 mb-2 animate-fade-up"
         style={{ animationDelay: "400ms" }}
       >
         Not sure yet, just browsing

@@ -1,8 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { Mic, Sparkles, Puzzle, ArrowRight, Check, User, CreditCard, Loader2, Rocket } from "lucide-react";
-import PandaAvatar from "../PandaAvatar";
+import { Mic, Sparkles, Puzzle, ArrowRight, Check, Loader2 } from "lucide-react";
 import ChannelTabBar from "./ChannelTabBar";
 import type { OnboardingStep } from "@/lib/onboarding-store";
 
@@ -21,24 +20,20 @@ const POST_PAYMENT_STEPS: OnboardingStep[] = [
 /* ── Setup steps shown to user ── */
 const SETUP_STEPS = [
   {
-    icon: User,
-    label: "Personalize",
+    label: "Preference",
     desc: "About you",
     inProgressDuring: ["name", "role"] as OnboardingStep[],
     completedAfter: ["payment", "channel", "smsVerify", "smsConfirm", "appDownload", "loading"] as OnboardingStep[],
   },
   {
-    icon: CreditCard,
-    label: "Activate",
+    label: "Subscription",
     desc: "Free credits",
     inProgressDuring: ["payment"] as OnboardingStep[],
     completedAfter: ["channel", "smsVerify", "smsConfirm", "appDownload", "loading"] as OnboardingStep[],
   },
   {
-    icon: Rocket,
-    label: "Launch",
+    label: "Configuring",
     desc: "You're in",
-    // in_progress as soon as payment is done (background init running)
     inProgressDuring: ["channel", "smsVerify", "smsConfirm", "appDownload", "loading"] as OnboardingStep[],
     completedAfter: [] as OnboardingStep[],
   },
@@ -58,6 +53,67 @@ const LOADING_MESSAGES = [
   "Connecting your channels...",
   "Preparing your experience...",
   "Almost ready...",
+];
+
+/* ── Step icon SVGs ── */
+function StepIcon({ index, status }: { index: number; status: StepStatus }) {
+  const opacity = status === "pending" ? "opacity-30" : "opacity-100";
+
+  if (index === 0) {
+    return (
+      <svg width="44" height="44" viewBox="0 0 44 44" fill="none" className={`transition-all duration-300 ${opacity}`}>
+        <circle cx="18" cy="14" r="6" fill="#EF4444" />
+        <circle cx="18" cy="14" r="3" fill="#FCA5A5" />
+        <path d="M8 36c0-5.523 4.477-10 10-10s10 4.477 10 10" stroke="#EF4444" strokeWidth="2" strokeLinecap="round" fill="none" />
+        <circle cx="32" cy="12" r="7.5" fill="#F97316" />
+        <path d="M32 8.5v7M28.5 12h7" stroke="white" strokeWidth="1.8" strokeLinecap="round" />
+      </svg>
+    );
+  }
+  if (index === 1) {
+    return (
+      <svg width="44" height="44" viewBox="0 0 44 44" fill="none" className={`transition-all duration-300 ${opacity}`}>
+        <path d="M10 30c2-1 5-2.5 12-2.5s10 1.5 12 2.5v-4c-2-1-5-2.5-12-2.5s-10 1.5-12 2.5v4z" fill="#EF4444" />
+        <path d="M10 25c2-1 5-2.5 12-2.5s10 1.5 12 2.5v-4c-2-1-5-2.5-12-2.5s-10 1.5-12 2.5v4z" fill="#F97316" />
+        <circle cx="30" cy="12" r="8.5" fill="#EF4444" />
+        <text x="30" y="16" textAnchor="middle" fill="white" fontSize="12" fontWeight="bold">$</text>
+      </svg>
+    );
+  }
+  return (
+    <svg width="44" height="44" viewBox="0 0 44 44" fill="none" className={`transition-all duration-300 ${opacity}`}>
+      <rect x="5" y="8" width="34" height="26" rx="4" fill="#EF4444" />
+      <rect x="5" y="8" width="34" height="8" rx="4" fill="#F97316" />
+      <rect x="5" y="13" width="34" height="3" fill="#F97316" />
+      <circle cx="12" cy="12" r="1.2" fill="white" />
+      <circle cx="16.5" cy="12" r="1.2" fill="white" />
+      <circle cx="21" cy="12" r="1.2" fill="white" />
+      <path d="M13 23l4 3.5-4 3.5" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M20 30h10" stroke="white" strokeWidth="2" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+/* ── Feature cards data ── */
+const FEATURES = [
+  {
+    icon: <Mic size={20} className="text-emerald-500" />,
+    bgColor: "bg-emerald-50",
+    title: "Voice Chat",
+    desc: "Talk naturally with your AI companion through voice-first conversations across any device.",
+  },
+  {
+    icon: <Sparkles size={20} className="text-violet-500" />,
+    bgColor: "bg-violet-50",
+    title: "Smart Tasks",
+    desc: "Delegate complex work to autonomous background agents that handle research, analysis, and more.",
+  },
+  {
+    icon: <Puzzle size={20} className="text-rose-400" />,
+    bgColor: "bg-rose-50",
+    title: "Skills Store",
+    desc: "Extend your panda's abilities with plugins — from email drafting to code review and beyond.",
+  },
 ];
 
 export default function WelcomePage({
@@ -85,7 +141,6 @@ export default function WelcomePage({
       setProgress((p) => Math.min(p + 0.6, 100));
     }, 30);
 
-    // Simulated init completes after 5 seconds
     const timeout = setTimeout(() => {
       setIsReady(true);
       setProgress(100);
@@ -98,197 +153,163 @@ export default function WelcomePage({
     };
   }, [isInitializing]);
 
-  // Compute statuses — override Launch to "completed" when ready
+  // Compute statuses
   const statuses = SETUP_STEPS.map((s, i) => {
     const base = getStepStatus(s, onboardingStep);
     if (i === 2 && isReady) return "completed" as StepStatus;
     return base;
   });
 
-  const completedCount = statuses.filter((s) => s === "completed").length;
   const hasProgress = statuses.some((s) => s === "completed" || s === "in_progress");
-
-  // Show loading UI on the Launch row when init is running but not yet ready
   const showLaunchLoading = isInitializing && !isReady;
-
-  // Modal is closed when step is "loading" — that's when user can see Welcome page
   const modalClosed = onboardingStep === "loading";
+
+  // Determine button state
+  const allDone = isReady && modalClosed;
+  const isLoading = showLaunchLoading && modalClosed;
+
+  const handleClick = () => {
+    if (allDone) {
+      onSetupComplete();
+    } else {
+      onStartOnboarding();
+    }
+  };
+
+  const buttonLabel = allDone
+    ? "Start Exploring"
+    : hasProgress
+    ? "Continue"
+    : "Get Started";
 
   return (
     <div className="flex-1 flex flex-col h-full min-w-0">
       <ChannelTabBar />
 
-      <div className="flex-1 overflow-y-auto flex items-start justify-center">
-        <div className="max-w-2xl w-full px-6 md:px-8 py-10 md:py-16">
-          {/* ── Header ── */}
-          <div className="flex items-start gap-6 mb-10">
-            <div className="flex-1">
-              <h1 className="font-serif text-[32px] md:text-[42px] font-semibold leading-[1.08] tracking-tight animate-fade-up">
-                Welcome to<br />Panda Claw
-              </h1>
-              <p
-                className="text-warm-gray text-[15px] mt-3 max-w-md leading-relaxed animate-fade-up"
-                style={{ animationDelay: "100ms" }}
-              >
-                Your voice-first AI companion — chat, delegate tasks,
-                and get things done across every channel.
-              </p>
-            </div>
-            <div
-              className="animate-fade-up shrink-0 hidden sm:block"
-              style={{ animationDelay: "200ms" }}
-            >
-              <PandaAvatar size={110} animate />
-            </div>
-          </div>
+      <div className="flex-1 overflow-y-auto">
+        <div className="max-w-3xl mx-auto px-6 md:px-8 py-8 md:py-12">
 
-          {/* ── What you can do ── */}
+          {/* ── Stepper Section ── */}
           <div
-            className="mb-10 animate-fade-up"
-            style={{ animationDelay: "250ms" }}
+            className="relative rounded-2xl px-8 md:px-12 pt-8 pb-6 mb-6 overflow-hidden animate-fade-up"
+            style={{
+              background: "radial-gradient(ellipse 80% 70% at 50% 100%, #FECDD3 0%, #FFE4E6 35%, #FFF1F2 60%, #FFFBFB 100%)",
+            }}
           >
-            <p className="text-[13px] font-medium text-warm-gray uppercase tracking-wider mb-4">
-              What you can do
-            </p>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-              {[
-                { Icon: Mic, title: "Voice Chat", desc: "Talk naturally, hands-free" },
-                { Icon: Sparkles, title: "Smart Tasks", desc: "Delegate work to background agents" },
-                { Icon: Puzzle, title: "Skills Store", desc: "Extend with plugins & integrations" },
-              ].map((item) => (
-                <div
-                  key={item.title}
-                  className="flex items-center gap-3 px-4 py-3.5 rounded-2xl bg-white border border-cream-dark"
-                >
-                  <div className="w-9 h-9 rounded-xl bg-cream-dark/30 flex items-center justify-center shrink-0">
-                    <item.Icon size={17} className="text-warm-gray" />
+            {/* Step icons row — tightly spaced */}
+            <div className="flex items-end justify-center mb-5">
+              <div className="flex items-end" style={{ gap: "80px" }}>
+                {SETUP_STEPS.map((_, i) => (
+                  <div key={i} className="flex flex-col items-center">
+                    <StepIcon index={i} status={statuses[i]} />
                   </div>
-                  <div>
-                    <p className="text-[13px] font-medium text-foreground">{item.title}</p>
-                    <p className="text-[11px] text-warm-gray leading-snug">{item.desc}</p>
+                ))}
+              </div>
+            </div>
+
+            {/* Progress circles + connecting lines */}
+            <div className="flex items-center justify-center mb-1.5">
+              {SETUP_STEPS.map((_, i) => (
+                <div key={i} className="flex items-center">
+                  {/* Step circle */}
+                  <div className={`w-9 h-9 rounded-full flex items-center justify-center text-[13px] font-semibold transition-all duration-300 shrink-0 ${
+                    statuses[i] === "completed"
+                      ? "bg-emerald-500 text-white shadow-[0_0_0_3px_rgba(16,185,129,0.2)]"
+                      : statuses[i] === "in_progress"
+                      ? "bg-white border-[2px] border-emerald-400 text-emerald-600 shadow-[0_0_0_3px_rgba(16,185,129,0.1)]"
+                      : "bg-white border-[2px] border-gray-200 text-gray-300"
+                  }`}>
+                    {statuses[i] === "completed" ? (
+                      <Check size={16} strokeWidth={3} />
+                    ) : statuses[i] === "in_progress" ? (
+                      <Loader2 size={15} className="animate-spin" />
+                    ) : (
+                      <span>{i + 1}</span>
+                    )}
                   </div>
+
+                  {/* Connecting line */}
+                  {i < SETUP_STEPS.length - 1 && (
+                    <div className="w-[60px] md:w-[80px] h-0 mx-0.5">
+                      {statuses[i] === "completed" ? (
+                        <div className="w-full border-t-[2px] border-solid border-emerald-500" />
+                      ) : (
+                        <div className="w-full border-t-[2px] border-dashed border-gray-300/60" />
+                      )}
+                    </div>
+                  )}
                 </div>
               ))}
             </div>
-          </div>
 
-          {/* ── Setup Card ── */}
-          <div
-            className="bg-white border border-cream-dark rounded-2xl p-6 animate-fade-up"
-            style={{ animationDelay: "350ms" }}
-          >
-            {/* Header row */}
-            <div className="flex items-center justify-between mb-5">
-              <div>
-                <h3 className="font-semibold text-[16px]">
-                  {isReady && modalClosed
-                    ? "You're all set!"
-                    : showLaunchLoading && modalClosed
-                    ? "Almost there!"
-                    : hasProgress
-                    ? "Continue setup"
-                    : "Get started"}
-                </h3>
-                <p className="text-warm-gray text-[13px] mt-0.5">
-                  {isReady && modalClosed
-                    ? "Everything is ready — let's go!"
-                    : showLaunchLoading && modalClosed
-                    ? "Preparing your workspace..."
-                    : completedCount > 0
-                    ? `${completedCount} of ${SETUP_STEPS.length} done — almost there!`
-                    : hasProgress
-                    ? "You've started — pick up where you left off."
-                    : "Three quick steps, then you're in."}
+            {/* Step labels */}
+            <div className="flex items-start justify-center">
+              {SETUP_STEPS.map((step, i) => (
+                <div key={i} className="flex items-center">
+                  <div className="w-9 text-center">
+                    <p className={`text-[11px] font-medium whitespace-nowrap mt-1 ${
+                      statuses[i] === "completed" ? "text-emerald-600" :
+                      statuses[i] === "in_progress" ? "text-foreground" :
+                      "text-gray-300"
+                    }`}>
+                      {step.label}
+                    </p>
+                  </div>
+                  {i < SETUP_STEPS.length - 1 && (
+                    <div className="w-[60px] md:w-[80px] mx-0.5" />
+                  )}
+                </div>
+              ))}
+            </div>
+
+            {/* Loading progress bar */}
+            {isLoading && (
+              <div className="mt-5 max-w-xs mx-auto">
+                <div className="w-full h-[3px] bg-white/60 rounded-full overflow-hidden">
+                  <div
+                    className="h-full bg-emerald-500 rounded-full transition-all duration-100 ease-out"
+                    style={{ width: `${progress}%` }}
+                  />
+                </div>
+                <p className="text-[11px] text-rose-700/50 text-center mt-1.5">
+                  {LOADING_MESSAGES[loadingMsg]}
                 </p>
               </div>
-              {isReady && modalClosed ? (
-                <button
-                  onClick={onSetupComplete}
-                  className="btn-primary text-[13px] px-5 py-2.5 flex items-center gap-2"
-                >
-                  Start Exploring
-                  <ArrowRight size={15} />
-                </button>
-              ) : !(showLaunchLoading && modalClosed) ? (
-                <button
-                  onClick={onStartOnboarding}
-                  className="btn-primary text-[13px] px-5 py-2.5 flex items-center gap-2"
-                >
-                  {hasProgress ? "Continue" : "Start Setup"}
-                  <ArrowRight size={15} />
-                </button>
-              ) : null}
-            </div>
-
-            {/* Step rows */}
-            <div className="flex flex-col gap-2.5">
-              {SETUP_STEPS.map((step, i) => {
-                const status = statuses[i];
-                const isLaunchRow = step.label === "Launch";
-                const isLaunchLoading = isLaunchRow && showLaunchLoading;
-                const isLaunchReady = isLaunchRow && isReady;
-                return (
-                  <div
-                    key={i}
-                    className={`flex items-center gap-3.5 px-4 py-3 rounded-xl transition-all ${
-                      status === "completed"
-                        ? "bg-accent-light/50"
-                        : status === "in_progress"
-                        ? "bg-amber-50 border border-amber-200"
-                        : "bg-cream/60"
-                    }`}
-                  >
-                    <div
-                      className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 text-[13px] font-semibold ${
-                        status === "completed"
-                          ? "bg-accent text-white"
-                          : status === "in_progress"
-                          ? "bg-amber-400 text-white"
-                          : "bg-cream-dark/40 text-warm-gray"
-                      }`}
-                    >
-                      {status === "completed" ? (
-                        <Check size={15} />
-                      ) : status === "in_progress" ? (
-                        <Loader2 size={15} className="animate-spin" />
-                      ) : (
-                        <span>{i + 1}</span>
-                      )}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className={`text-[14px] font-medium ${
-                        status === "completed"
-                          ? "text-accent"
-                          : status === "in_progress"
-                          ? "text-amber-700"
-                          : "text-foreground"
-                      }`}>
-                        {isLaunchLoading ? LOADING_MESSAGES[loadingMsg] : step.label}
-                      </p>
-                      {isLaunchLoading ? (
-                        <div className="mt-1.5 w-full h-[3px] bg-amber-200 rounded-full overflow-hidden">
-                          <div
-                            className="h-full bg-amber-500 rounded-full transition-all duration-100 ease-out"
-                            style={{ width: `${progress}%` }}
-                          />
-                        </div>
-                      ) : (
-                        <p className="text-[12px] text-warm-gray leading-snug">
-                          {isLaunchReady ? "Ready to go" : step.desc}
-                        </p>
-                      )}
-                    </div>
-                    {status === "completed" && (
-                      <span className="text-[11px] text-accent font-medium shrink-0">Done</span>
-                    )}
-                    {status === "in_progress" && !isLaunchLoading && (
-                      <span className="text-[11px] text-amber-600 font-medium shrink-0">In progress</span>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
+            )}
           </div>
+
+          {/* ── Button ── */}
+          <div className="flex justify-center mb-10 animate-fade-up" style={{ animationDelay: "150ms" }}>
+            {!isLoading && (
+              <button
+                onClick={handleClick}
+                className="btn-primary text-[15px] px-12 py-3.5 flex items-center gap-2"
+              >
+                {buttonLabel}
+                <ArrowRight size={16} />
+              </button>
+            )}
+          </div>
+
+          {/* ── Feature Cards ── */}
+          <div
+            className="grid grid-cols-1 md:grid-cols-3 gap-4 animate-fade-up"
+            style={{ animationDelay: "300ms" }}
+          >
+            {FEATURES.map((feature) => (
+              <div
+                key={feature.title}
+                className="bg-white border border-gray-100 rounded-2xl p-5 hover:border-gray-200 transition-all"
+              >
+                <div className={`w-10 h-10 rounded-xl ${feature.bgColor} flex items-center justify-center mb-3`}>
+                  {feature.icon}
+                </div>
+                <h3 className="text-[15px] font-semibold mb-1">{feature.title}</h3>
+                <p className="text-warm-gray text-[13px] leading-relaxed">{feature.desc}</p>
+              </div>
+            ))}
+          </div>
+
         </div>
       </div>
     </div>

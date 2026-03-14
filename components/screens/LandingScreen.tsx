@@ -18,10 +18,10 @@ export default function LandingScreen({ onNext }: { onNext: () => void }) {
       </div>
 
       <div className="animate-fade-up mt-8 mb-6" style={{ animationDelay: "250ms" }}>
-        <h1 className="font-serif text-[44px] md:text-[56px] leading-[1.05] font-medium tracking-tight max-w-lg">
+        <h1 className="text-[44px] md:text-[56px] leading-[1.05] font-semibold tracking-tight max-w-lg">
           Your AI companion,
           <br />
-          <span className="italic text-accent">ready from day one</span>
+          <span className="text-warm-gray">ready from day one</span>
         </h1>
       </div>
 

@@ -76,12 +76,12 @@ export default function MarketingPage() {
         </div>
 
         <h1
-          className="font-serif text-[48px] md:text-[64px] leading-[1.05] font-medium tracking-tight mt-8 mb-6 animate-fade-up"
+          className="text-[48px] md:text-[64px] leading-[1.05] font-semibold tracking-tight mt-8 mb-6 animate-fade-up"
           style={{ animationDelay: "150ms" }}
         >
           Your AI companion,
           <br />
-          <span className="italic text-accent">ready from day one</span>
+          <span className="text-warm-gray">ready from day one</span>
         </h1>
 
         <p
@@ -142,10 +142,10 @@ export default function MarketingPage() {
               key={card.title}
               className="card-elevated p-8 flex flex-col items-start"
             >
-              <div className="w-12 h-12 rounded-2xl bg-accent-light flex items-center justify-center text-[24px] mb-5">
+              <div className="w-12 h-12 rounded-2xl bg-[#F3F4F6] flex items-center justify-center text-[24px] mb-5">
                 {card.icon}
               </div>
-              <h3 className="font-serif text-[22px] font-semibold mb-2">
+              <h3 className="text-[20px] font-semibold mb-2">
                 {card.title}
               </h3>
               <p className="text-warm-gray text-[14px] leading-relaxed">
@@ -178,7 +178,7 @@ export default function MarketingPage() {
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.95, y: 20 }}
                 transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
-                className="relative bg-cream rounded-3xl p-8 w-full max-w-sm shadow-[0_20px_60px_rgba(0,0,0,0.12)]"
+                className="relative bg-white rounded-3xl p-8 w-full max-w-sm shadow-[0_20px_60px_rgba(0,0,0,0.1)]"
               >
                 {/* Close */}
                 <button
@@ -192,7 +192,7 @@ export default function MarketingPage() {
 
                 <div className="flex flex-col items-center">
                   <PandaAvatar size={64} className="mb-4" />
-                  <h2 className="font-serif text-[26px] font-semibold mb-1">
+                  <h2 className="text-[24px] font-semibold mb-1">
                     Welcome to PandaClaw
                   </h2>
                   <p className="text-warm-gray text-[14px] mb-8">

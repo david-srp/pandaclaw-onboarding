@@ -64,7 +64,7 @@ export default function PersonaDetailScreen({
     return (
       <div className="flex flex-col items-center justify-center min-h-screen px-6">
         <PandaAvatar size={72} animate className="mb-6" />
-        <p className="text-warm-gray font-serif text-lg italic animate-breathe">Thinking...</p>
+        <p className="text-warm-gray text-lg animate-breathe">Thinking...</p>
       </div>
     );
   }

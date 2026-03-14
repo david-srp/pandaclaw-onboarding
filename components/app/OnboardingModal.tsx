@@ -116,7 +116,7 @@ export default function OnboardingModal({
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.95 }}
             transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
-            className="relative bg-cream rounded-3xl w-[92vw] max-w-2xl max-h-[82vh] overflow-hidden flex flex-col shadow-[0_20px_60px_rgba(0,0,0,0.15)]"
+            className="relative bg-white rounded-3xl w-[92vw] max-w-xl max-h-[82vh] overflow-hidden flex flex-col shadow-[0_20px_60px_rgba(0,0,0,0.1)] h-[min(640px,88vh)]"
           >
             <div className="flex justify-end px-5 pt-4 pb-0 shrink-0">
               <button
@@ -127,7 +127,7 @@ export default function OnboardingModal({
               </button>
             </div>
 
-            <div className="flex-1 flex items-center justify-center overflow-y-auto">
+            <div className="flex-1 overflow-y-auto">
               {step === "inviteCode" && (
                 <InviteCodeScreen onNext={() => goTo("name")} onClose={onClose} />
               )}
@@ -169,7 +169,7 @@ export default function OnboardingModal({
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.95, y: 20 }}
           transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
-          className="relative bg-cream rounded-3xl w-[92vw] max-w-2xl max-h-[82vh] overflow-hidden flex flex-col shadow-[0_20px_60px_rgba(0,0,0,0.15)]"
+          className="relative bg-white rounded-3xl w-[92vw] max-w-xl max-h-[82vh] overflow-hidden flex flex-col shadow-[0_20px_60px_rgba(0,0,0,0.1)] h-[min(640px,88vh)]"
         >
           {/* ── Header ── */}
           <div className="flex items-center px-5 pt-4 pb-2 shrink-0">
