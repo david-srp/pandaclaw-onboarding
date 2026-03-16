@@ -21,7 +21,7 @@ export default function LandingScreen({ onNext }: { onNext: () => void }) {
         <h1 className="font-serif text-[44px] md:text-[56px] leading-[1.05] font-medium tracking-tight max-w-lg">
           Your AI companion,
           <br />
-          <span className="italic text-accent">ready from day one</span>
+          <span className="text-foreground font-semibold">ready from day one</span>
         </h1>
       </div>
 

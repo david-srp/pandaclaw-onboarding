@@ -5,8 +5,12 @@ import PandaAvatar from "../PandaAvatar";
 
 export default function RegisterScreen({
   onNext,
+  isSignIn = false,
+  onBackToHero,
 }: {
   onNext: () => void;
+  isSignIn?: boolean;
+  onBackToHero?: () => void;
 }) {
   const [email, setEmail] = useState("");
 
@@ -33,16 +37,16 @@ export default function RegisterScreen({
         <PandaAvatar size={56} className="mb-4 animate-fade-up" />
 
         <h2
-          className="font-serif text-[26px] font-semibold text-center leading-tight mb-1 animate-fade-up"
+          className="text-[26px] font-semibold text-center leading-tight mb-1 animate-fade-up"
           style={{ animationDelay: "150ms" }}
         >
-          Log in to your account
+          {isSignIn ? "Welcome back" : "Create your account"}
         </h2>
         <p
           className="text-warm-gray text-[14px] text-center mb-6 animate-fade-up"
           style={{ animationDelay: "250ms" }}
         >
-          Create an account or sign in to continue
+          {isSignIn ? "Sign in to continue" : "Create an account or sign in to continue"}
         </p>
 
         <div className="flex flex-col gap-3 w-full max-w-sm stagger-children">
@@ -88,6 +92,16 @@ export default function RegisterScreen({
             <span className="font-medium text-[15px]">Continue with email</span>
           </button>
         </div>
+
+        {isSignIn && onBackToHero && (
+          <button
+            onClick={onBackToHero}
+            className="mt-6 text-warm-gray hover:text-foreground text-[13px] font-medium cursor-pointer transition-colors text-center animate-fade-up"
+            style={{ animationDelay: "500ms" }}
+          >
+            &larr; Back to home
+          </button>
+        )}
       </div>
     </div>
   );

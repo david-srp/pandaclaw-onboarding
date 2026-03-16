@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import PandaAvatar from "../PandaAvatar";
 import SpeechBubble from "../SpeechBubble";
 
@@ -11,6 +12,14 @@ export default function NotificationPermScreen({
   onNext: () => void;
 }) {
   const clawName = userName ? `${userName}'s Panda` : "Claw";
+  const [show1, setShow1] = useState(false);
+  const [show2, setShow2] = useState(false);
+
+  useEffect(() => {
+    const t1 = setTimeout(() => setShow1(true), 600);
+    const t2 = setTimeout(() => setShow2(true), 1200);
+    return () => { clearTimeout(t1); clearTimeout(t2); };
+  }, []);
 
   return (
     <div className="flex flex-col justify-between min-h-screen px-6 pt-16 pb-8">
@@ -25,14 +34,15 @@ export default function NotificationPermScreen({
           </div>
         </div>
 
-        {/* Mock iOS notification banner - styled as floating cards, not interactive */}
-        <div className="mt-8 w-full max-w-sm">
+        {/* Mock iOS notification banners — slide in from right with stagger */}
+        <div className="mt-8 w-full max-w-sm overflow-hidden">
           <div
-            className="animate-fade-up rounded-2xl bg-white/90 backdrop-blur-md px-4 py-3 shadow-[0_2px_20px_rgba(0,0,0,0.08)]"
-            style={{ animationDelay: "300ms" }}
+            className={`rounded-2xl bg-white/90 backdrop-blur-md px-4 py-3 shadow-[0_2px_20px_rgba(0,0,0,0.08)] transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] ${
+              show1 ? "opacity-100 translate-x-0" : "opacity-0 translate-x-[60px]"
+            }`}
           >
             <div className="flex items-start gap-3">
-              <div className="w-9 h-9 rounded-[10px] bg-cream flex items-center justify-center flex-shrink-0 mt-0.5 shadow-sm">
+              <div className="w-9 h-9 rounded-[10px] bg-[#F5F5F5] flex items-center justify-center flex-shrink-0 mt-0.5 shadow-sm">
                 <PandaAvatar size={24} />
               </div>
               <div className="flex-1 min-w-0">
@@ -48,11 +58,12 @@ export default function NotificationPermScreen({
           </div>
 
           <div
-            className="animate-fade-up rounded-2xl bg-white/90 backdrop-blur-md px-4 py-3 shadow-[0_2px_20px_rgba(0,0,0,0.08)] mt-2.5"
-            style={{ animationDelay: "450ms" }}
+            className={`rounded-2xl bg-white/90 backdrop-blur-md px-4 py-3 shadow-[0_2px_20px_rgba(0,0,0,0.08)] mt-2.5 transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] ${
+              show2 ? "opacity-100 translate-x-0" : "opacity-0 translate-x-[60px]"
+            }`}
           >
             <div className="flex items-start gap-3">
-              <div className="w-9 h-9 rounded-[10px] bg-cream flex items-center justify-center flex-shrink-0 mt-0.5 shadow-sm">
+              <div className="w-9 h-9 rounded-[10px] bg-[#F5F5F5] flex items-center justify-center flex-shrink-0 mt-0.5 shadow-sm">
                 <PandaAvatar size={24} />
               </div>
               <div className="flex-1 min-w-0">
@@ -69,7 +80,7 @@ export default function NotificationPermScreen({
         </div>
       </div>
 
-      {/* Bottom CTA - pinned */}
+      {/* Bottom CTA */}
       <div className="w-full max-w-sm mx-auto pt-6">
         <button
           onClick={onNext}

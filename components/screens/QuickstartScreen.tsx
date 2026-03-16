@@ -24,7 +24,7 @@ export default function QuickstartScreen({ userName }: { userName: string }) {
         <h2 className="font-serif text-[36px] md:text-[42px] font-medium leading-tight mb-4 animate-fade-up" style={{ animationDelay: "200ms" }}>
           You&apos;re all set,
           <br />
-          <span className="italic text-accent">{userName}</span>
+          <span className="font-semibold">{userName}</span>
         </h2>
 
         <p

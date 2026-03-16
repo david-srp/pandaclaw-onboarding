@@ -113,11 +113,11 @@ export default function ValuePropsScreen({
       {/* Bottom: CTA area */}
       <div className="w-full max-w-sm flex flex-col items-center">
         <h1
-          className="font-serif text-[34px] leading-[1.1] font-semibold text-center tracking-tight mb-8 animate-fade-up"
+          className="text-[28px] leading-[1.15] font-semibold text-center tracking-tight mb-8 animate-fade-up"
           style={{ animationDelay: "400ms" }}
         >
           Your 24/7 AI buddy that<br />
-          <span className="italic text-accent">actually gets things done</span>
+          <span className="text-[#EF5A6F]">actually gets things done</span>
         </h1>
 
         <button

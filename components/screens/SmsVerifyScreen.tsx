@@ -94,7 +94,7 @@ export default function SmsVerifyScreen({
       <div className="flex flex-col items-center justify-center min-h-screen px-6">
         <PandaAvatar size={88} animate className="mb-8" />
 
-        <p className="text-foreground font-serif text-xl italic mb-8 animate-breathe">
+        <p className="text-foreground text-xl mb-8 animate-breathe">
           {loadingMessages[msgIndex]}
         </p>
 

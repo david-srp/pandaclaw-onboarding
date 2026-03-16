@@ -63,7 +63,7 @@ export default function IosPaywallScreen({
           >
             Unlock Claw to reach
             <br />
-            <span className="italic text-accent">your full potential</span>
+            <span className="font-semibold">your full potential</span>
           </h2>
 
           {/* Mock phone showing the app */}
@@ -91,7 +91,7 @@ export default function IosPaywallScreen({
 
                 {/* Feature cards */}
                 <div className="flex flex-col gap-2">
-                  <div className="bg-cream rounded-xl px-3.5 py-2.5">
+                  <div className="bg-[#F5F5F5] rounded-xl px-3.5 py-2.5">
                     <div className="flex items-center gap-2">
                       <span className="text-[14px]">☁️</span>
                       <div>
@@ -100,7 +100,7 @@ export default function IosPaywallScreen({
                       </div>
                     </div>
                   </div>
-                  <div className="bg-cream rounded-xl px-3.5 py-2.5">
+                  <div className="bg-[#F5F5F5] rounded-xl px-3.5 py-2.5">
                     <div className="flex items-center gap-2">
                       <span className="text-[14px]">⚡</span>
                       <div>
@@ -109,7 +109,7 @@ export default function IosPaywallScreen({
                       </div>
                     </div>
                   </div>
-                  <div className="bg-cream rounded-xl px-3.5 py-2.5">
+                  <div className="bg-[#F5F5F5] rounded-xl px-3.5 py-2.5">
                     <div className="flex items-center gap-2">
                       <span className="text-[14px]">🧠</span>
                       <div>
@@ -178,7 +178,7 @@ export default function IosPaywallScreen({
           />
 
           {/* Sheet */}
-          <div className="fixed bottom-0 left-0 right-0 z-50 bg-cream rounded-t-3xl shadow-2xl animate-slide-up">
+          <div className="fixed bottom-0 left-0 right-0 z-50 bg-white rounded-t-3xl shadow-2xl animate-slide-up">
             {/* Handle */}
             <div className="flex justify-center pt-3 pb-2">
               <div className="w-10 h-1 rounded-full bg-cream-dark/40" />

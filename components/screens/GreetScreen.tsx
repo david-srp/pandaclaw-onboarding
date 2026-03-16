@@ -14,7 +14,7 @@ export default function GreetScreen({ onDone }: { onDone: () => void }) {
       <PandaAvatar size={120} className="mb-6 animate-fade-up" />
       <div className="animate-fade-up" style={{ animationDelay: "300ms" }}>
         <div className="bg-white/80 backdrop-blur-sm rounded-2xl px-7 py-5 border border-cream-dark/60 max-w-xs">
-          <p className="font-serif text-[24px] text-foreground text-center leading-relaxed font-light italic">
+          <p className="text-[20px] text-foreground text-center leading-relaxed font-normal">
             Hi there! I&apos;m Claw 👋
           </p>
         </div>

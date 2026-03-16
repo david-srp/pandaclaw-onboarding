@@ -66,12 +66,14 @@ interface OnboardingState {
   screen: Screen;
   userName: string;
   role: string;
+  isSignIn: boolean;
 }
 
 const defaultState: OnboardingState = {
   screen: "splash",
   userName: "",
   role: "",
+  isSignIn: false,
 };
 
 export default function Home() {
@@ -112,8 +114,9 @@ export default function Home() {
 
   if (!loaded) return null;
 
-  // Nav bar: only show for nameRole through notifications (NOT paywall)
-  const showNav = !["splash", "hero", "greet", "paywall", "setupLoading", "appHome"].includes(state.screen);
+  // Nav bar: only show for onboarding steps (NOT sign-in mode, paywall, etc.)
+  const showNav = !["splash", "hero", "greet", "paywall", "setupLoading", "appHome"].includes(state.screen)
+    && !(state.screen === "register" && state.isSignIn);
 
   return (
     <div className="relative min-h-screen">
@@ -150,8 +153,8 @@ export default function Home() {
           {/* 2. Hero — visual demo + CTA */}
           {state.screen === "hero" && (
             <ValuePropsScreen
-              onNext={() => update({ screen: "greet" })}
-              onSignIn={() => update({ screen: "register" })}
+              onNext={() => update({ screen: "greet", isSignIn: false })}
+              onSignIn={() => update({ screen: "register", isSignIn: true })}
             />
           )}
 
@@ -169,7 +172,11 @@ export default function Home() {
 
           {/* 4. Register — Apple / Google / Email */}
           {state.screen === "register" && (
-            <RegisterScreen onNext={() => update({ screen: "inviteCode" })} />
+            <RegisterScreen
+              isSignIn={state.isSignIn}
+              onNext={() => update({ screen: state.isSignIn ? "appHome" : "inviteCode", isSignIn: false })}
+              onBackToHero={state.isSignIn ? () => update({ screen: "hero", isSignIn: false }) : undefined}
+            />
           )}
 
           {/* 5. Invite Code */}
