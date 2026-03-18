@@ -118,19 +118,18 @@ Hero → NameRole(name+role) → Login → InviteCode → Notifications → Payw
 
 #### 路径 B：老用户登录（Already have an account?）
 ```
-Hero → Login → [判断是否 Web 端已付费用户]
-  ├─ Y (Web 老用户已付费) → Notifications → 进入 Chat Session (AppHome)
-  └─ N (老用户未付费)     → InviteCode → Notifications → Paywall → SetupLoading → AppHome
+Hero → Login → [判断是否已付费]
+  ├─ Y (已付费) → Notifications → 进入 Chat Session (AppHome)
+  └─ N (未付费) → Notifications → Paywall → SetupLoading → AppHome
 ```
 
 **关键判断逻辑**（登录成功后，后端返回用户状态）：
-- **是否为 Web 端老用户**: 检查该账号是否已在 Web 端存在
-- **是否已付费**: 检查是否有有效订阅（web 端购买的订阅在 iOS 端通用）
-- 已付费老用户跳过 InviteCode 和 Paywall，仅请求通知权限后直接进入主应用
-- 未付费老用户仍需走 InviteCode → Notifications → Paywall 流程
+- **是否已付费**: 检查是否有有效订阅（Web 端购买的订阅在 iOS 端通用）
+- 已付费老用户跳过 Paywall，仅请求通知权限后直接进入主应用
+- 未付费老用户无需再填 InviteCode（既然已有账号说明之前已验证过），但仍需走 Notifications → Paywall 流程
 
 **Notifications 页**: 可以跳过（"Maybe later"）
-**Paywall 页**: 可以关闭（未付费用户仍可使用免费功能）
+**Paywall 页**: **不可跳过**，未付费用户必须完成订阅才能使用产品
 
 > **注意**: 当前原型中 Sign-In 分支为简化 demo（登录后直接进入 appHome）。上述完整判断逻辑需在对接后端 API 时实现。
 
@@ -288,7 +287,7 @@ Hero → Login → [判断是否 Web 端已付费用户]
 | 属性 | 值 |
 |------|-----|
 | 标题 | "Choose your plan" (28px, semibold, 居中) |
-| 可关闭 | 当前原型无关闭按钮；正式版需支持关闭（未付费用户仍可使用免费功能） |
+| 不可跳过 | 无关闭按钮，未付费用户必须完成订阅才能使用产品 |
 | 进度条 | 不显示 |
 
 **Monthly / Annually 切换**:
