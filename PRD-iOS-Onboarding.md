@@ -117,21 +117,25 @@ Hero → NameRole(name+role) → Login → InviteCode → Notifications → Payw
 - 注册/登录后继续完整 onboarding
 
 #### 路径 B：老用户登录（Already have an account?）
-```
-Hero → Login → [判断是否已付费]
-  ├─ Y (已付费) → Notifications → 进入 Chat Session (AppHome)
-  └─ N (未付费) → Notifications → Paywall → SetupLoading → AppHome
-```
 
-**关键判断逻辑**（登录成功后，后端返回用户状态）：
-- **是否已付费**: 检查是否有有效订阅（Web 端购买的订阅在 iOS 端通用）
-- 已付费老用户跳过 Paywall，仅请求通知权限后直接进入主应用
-- 未付费老用户无需再填 InviteCode（既然已有账号说明之前已验证过），但仍需走 Notifications → Paywall 流程
+老用户在 Web 端可能处于不同的 onboarding 阶段（Web 端流程为：注册 → 邀请码 → 个人信息），iOS 端登录后应从断点处继续，跳过已完成的步骤。
 
-**Notifications 页**: 可以跳过（"Maybe later"）
-**Paywall 页**: **不可跳过**，未付费用户必须完成订阅才能使用产品
+**用户状态与对应流程**:
 
-> **注意**: 当前原型中 Sign-In 分支为简化 demo（登录后直接进入 appHome）。上述完整判断逻辑需在对接后端 API 时实现。
+| 用户状态 | 说明 | iOS 登录后的流程 |
+|---------|------|-----------------|
+| 仅注册 | Web 端注册了账号，但未填邀请码 | Login → InviteCode → NameRole → Notifications → Paywall → AppHome |
+| 已填邀请码 | 填了邀请码，但未完善个人信息 | Login → NameRole → Notifications → Paywall → AppHome |
+| 已完善信息 | 邀请码 + 个人信息都已填写，但未付费 | Login → Notifications → Paywall → AppHome |
+| 已付费 | 有有效订阅（Web 端订阅在 iOS 端通用） | Login → Notifications → AppHome |
+
+**核心原则**：
+- 已完成的步骤不再重复，用户从缺失的第一步开始继续
+- **Notifications 页**: 所有老用户都会经过，可以跳过（"Maybe later"）
+- **Paywall 页**: **不可跳过**，未付费用户必须完成订阅才能使用产品
+- **InviteCode**: 只有从未填过邀请码的用户才需要
+
+> **注意**: 当前原型中 Sign-In 分支为简化 demo（登录后直接进入 appHome）。上述完整状态判断逻辑需在对接后端 API 时实现。
 
 ---
 
