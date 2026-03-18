@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import PandaAvatar from "../PandaAvatar";
 
 export default function RegisterScreen({
   onNext,
@@ -33,23 +32,36 @@ export default function RegisterScreen({
   return (
     <div className="flex flex-col min-h-screen px-6 pt-16 pb-0">
       {/* Upper area — all content pushed to top for keyboard clearance */}
-      <div className="pt-4 flex flex-col items-center">
-        <PandaAvatar size={56} className="mb-4 animate-fade-up" />
+      <div className="pt-8 flex flex-col w-full max-w-sm mx-auto">
+        <h1 className="text-[28px] font-semibold text-foreground leading-tight tracking-tight animate-fade-up">
+          {isSignIn ? "Welcome back" : "Create an account or sign in to continue"}
+        </h1>
 
-        <h2
-          className="text-[26px] font-semibold text-center leading-tight mb-1 animate-fade-up"
-          style={{ animationDelay: "150ms" }}
-        >
-          {isSignIn ? "Welcome back" : "Create your account"}
-        </h2>
-        <p
-          className="text-warm-gray text-[14px] text-center mb-6 animate-fade-up"
-          style={{ animationDelay: "250ms" }}
-        >
-          {isSignIn ? "Sign in to continue" : "Create an account or sign in to continue"}
-        </p>
+        <div className="flex flex-col gap-3 w-full mt-8 stagger-children">
+          {/* Email input + button */}
+          <input
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && email.includes("@") && onNext()}
+            placeholder="Email address"
+            className="input-editorial text-[15px]"
+          />
+          <button
+            onClick={onNext}
+            disabled={!email.includes("@")}
+            className="card-elevated flex items-center justify-center px-6 py-3.5 w-full cursor-pointer text-left disabled:opacity-40 disabled:cursor-not-allowed"
+          >
+            <span className="font-medium text-[15px]">Continue with email</span>
+          </button>
 
-        <div className="flex flex-col gap-3 w-full max-w-sm stagger-children">
+          {/* Divider */}
+          <div className="flex items-center gap-3 my-0.5">
+            <div className="flex-1 h-px bg-cream-dark/40" />
+            <span className="text-warm-gray/50 text-[12px]">or</span>
+            <div className="flex-1 h-px bg-cream-dark/40" />
+          </div>
+
           {/* Google */}
           <button
             onClick={onNext}
@@ -66,30 +78,6 @@ export default function RegisterScreen({
           >
             <span className="text-foreground/70">{iconMap.apple}</span>
             <span className="font-medium text-[15px]">Continue with Apple</span>
-          </button>
-
-          {/* Divider */}
-          <div className="flex items-center gap-3 my-0.5">
-            <div className="flex-1 h-px bg-cream-dark/40" />
-            <span className="text-warm-gray/50 text-[12px]">or</span>
-            <div className="flex-1 h-px bg-cream-dark/40" />
-          </div>
-
-          {/* Email input + button inline */}
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && email.includes("@") && onNext()}
-            placeholder="Email address"
-            className="input-editorial text-[15px]"
-          />
-          <button
-            onClick={onNext}
-            disabled={!email.includes("@")}
-            className="card-elevated flex items-center justify-center px-6 py-3.5 w-full cursor-pointer text-left disabled:opacity-40 disabled:cursor-not-allowed"
-          >
-            <span className="font-medium text-[15px]">Continue with email</span>
           </button>
         </div>
 

@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react";
 import PandaAvatar from "../PandaAvatar";
-import SpeechBubble from "../SpeechBubble";
 
 export default function NotificationPermScreen({
   userName,
@@ -23,58 +22,56 @@ export default function NotificationPermScreen({
 
   return (
     <div className="flex flex-col justify-between min-h-screen px-6 pt-16 pb-8">
-      <div />
+      {/* Title at top */}
+      <div className="pt-8 w-full max-w-sm mx-auto">
+        <h1 className="text-[28px] font-semibold text-foreground leading-tight tracking-tight animate-fade-up">
+          Stay in the loop
+        </h1>
+        <p className="mt-2 text-warm-gray text-[15px] animate-fade-up" style={{ animationDelay: "100ms" }}>
+          Get notified when tasks are done
+        </p>
+      </div>
 
-      <div className="flex flex-col items-center">
-        {/* Avatar + bubble side by side */}
-        <div className="flex items-start gap-3 w-full max-w-sm">
-          <PandaAvatar size={48} className="flex-shrink-0 animate-fade-up" />
-          <div className="flex-1 animate-fade-up" style={{ animationDelay: "100ms" }}>
-            <SpeechBubble>Turn on notifications so I can let you know when tasks are done!</SpeechBubble>
+      {/* Mock iOS notification banners */}
+      <div className="w-full max-w-sm mx-auto overflow-hidden">
+        <div
+          className={`rounded-2xl bg-[#F5F5F5] px-4 py-3 shadow-[0_2px_20px_rgba(0,0,0,0.06)] transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] ${
+            show1 ? "opacity-100 translate-x-0" : "opacity-0 translate-x-[60px]"
+          }`}
+        >
+          <div className="flex items-start gap-3">
+            <div className="w-9 h-9 rounded-[10px] bg-white flex items-center justify-center flex-shrink-0 mt-0.5 shadow-sm">
+              <PandaAvatar size={24} />
+            </div>
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center justify-between">
+                <span className="font-semibold text-[12px] text-foreground">{clawName}</span>
+                <span className="text-warm-gray/60 text-[10px]">now</span>
+              </div>
+              <p className="text-[12px] text-foreground/80 mt-0.5 leading-snug">
+                Done! I&apos;ve drafted your weekly report and scheduled the team sync for Thursday 2pm. ✅
+              </p>
+            </div>
           </div>
         </div>
 
-        {/* Mock iOS notification banners — slide in from right with stagger */}
-        <div className="mt-8 w-full max-w-sm overflow-hidden">
-          <div
-            className={`rounded-2xl bg-white/90 backdrop-blur-md px-4 py-3 shadow-[0_2px_20px_rgba(0,0,0,0.08)] transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] ${
-              show1 ? "opacity-100 translate-x-0" : "opacity-0 translate-x-[60px]"
-            }`}
-          >
-            <div className="flex items-start gap-3">
-              <div className="w-9 h-9 rounded-[10px] bg-[#F5F5F5] flex items-center justify-center flex-shrink-0 mt-0.5 shadow-sm">
-                <PandaAvatar size={24} />
-              </div>
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center justify-between">
-                  <span className="font-semibold text-[12px] text-foreground">{clawName}</span>
-                  <span className="text-warm-gray/60 text-[10px]">now</span>
-                </div>
-                <p className="text-[12px] text-foreground/80 mt-0.5 leading-snug">
-                  Done! I&apos;ve drafted your weekly report and scheduled the team sync for Thursday 2pm. ✅
-                </p>
-              </div>
+        <div
+          className={`rounded-2xl bg-[#F5F5F5] px-4 py-3 shadow-[0_2px_20px_rgba(0,0,0,0.06)] mt-2.5 transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] ${
+            show2 ? "opacity-100 translate-x-0" : "opacity-0 translate-x-[60px]"
+          }`}
+        >
+          <div className="flex items-start gap-3">
+            <div className="w-9 h-9 rounded-[10px] bg-white flex items-center justify-center flex-shrink-0 mt-0.5 shadow-sm">
+              <PandaAvatar size={24} />
             </div>
-          </div>
-
-          <div
-            className={`rounded-2xl bg-white/90 backdrop-blur-md px-4 py-3 shadow-[0_2px_20px_rgba(0,0,0,0.08)] mt-2.5 transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] ${
-              show2 ? "opacity-100 translate-x-0" : "opacity-0 translate-x-[60px]"
-            }`}
-          >
-            <div className="flex items-start gap-3">
-              <div className="w-9 h-9 rounded-[10px] bg-[#F5F5F5] flex items-center justify-center flex-shrink-0 mt-0.5 shadow-sm">
-                <PandaAvatar size={24} />
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center justify-between">
+                <span className="font-semibold text-[12px] text-foreground">{clawName}</span>
+                <span className="text-warm-gray/60 text-[10px]">2m ago</span>
               </div>
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center justify-between">
-                  <span className="font-semibold text-[12px] text-foreground">{clawName}</span>
-                  <span className="text-warm-gray/60 text-[10px]">2m ago</span>
-                </div>
-                <p className="text-[12px] text-foreground/80 mt-0.5 leading-snug">
-                  Quick question — should I prioritize the budget review or the client proposal first? 🤔
-                </p>
-              </div>
+              <p className="text-[12px] text-foreground/80 mt-0.5 leading-snug">
+                Quick question — should I prioritize the budget review or the client proposal first? 🤔
+              </p>
             </div>
           </div>
         </div>

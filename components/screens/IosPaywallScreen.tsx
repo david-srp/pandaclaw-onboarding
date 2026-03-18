@@ -1,279 +1,216 @@
 "use client";
 
-import { useState } from "react";
-import PandaAvatar from "../PandaAvatar";
+import { useState, useRef } from "react";
 
 interface Plan {
   id: string;
   name: string;
   monthly: number;
-  yearly: number; // per month when billed yearly
+  yearly: number;
   desc: string;
-  freeTrial: boolean;
+  priceDisplay: string;
+  priceNote: string;
+  features: string[];
+  cta: string;
+  bestValue?: boolean;
 }
 
 const plans: Plan[] = [
-  { id: "starter", name: "Starter", monthly: 24, yearly: 20, desc: "For personal use", freeTrial: true },
-  { id: "pro", name: "Pro", monthly: 100, yearly: 83, desc: "Power users & freelancers", freeTrial: false },
-  { id: "team", name: "Team", monthly: 200, yearly: 167, desc: "For teams up to 10", freeTrial: false },
+  {
+    id: "starter",
+    name: "7-Day Free",
+    monthly: 24,
+    yearly: 20,
+    desc: "Get started with your AI companion",
+    priceDisplay: "$0",
+    priceNote: "for 7 days, then $24/mo",
+    cta: "Start 7 day free trial",
+    features: [
+      "Unlimited free model (MiniMax M2.5)",
+      "4,800 credits/mo",
+      "2 vCPU, 4 GB RAM, 20 GB Storage",
+      "2 concurrent, 3 scheduled tasks",
+      "Basic image generation",
+      "Audio",
+      "App, SMS & Email channels",
+      "Memory retention during subscription",
+    ],
+  },
+  {
+    id: "pro",
+    name: "Pro",
+    monthly: 100,
+    yearly: 83,
+    desc: "For everyday productivity",
+    priceDisplay: "$100",
+    priceNote: "/ month",
+    cta: "Choose Pro",
+    features: [
+      "Everything in Starter, plus",
+      "20,000 credits/mo",
+      "8 vCPU, 16 GB RAM, 256 GB Storage",
+      "5 concurrent, 15 scheduled tasks",
+      "Advanced image generation",
+      "Video",
+      "Slack / Telegram",
+    ],
+  },
+  {
+    id: "ultra",
+    name: "Ultra",
+    monthly: 200,
+    yearly: 167,
+    desc: "Get the most out of PandaClaw",
+    priceDisplay: "$200",
+    priceNote: "/ month",
+    cta: "Choose Ultra",
+    bestValue: true,
+    features: [
+      "Everything in Pro, plus",
+      "40,000 credits/mo",
+      "8 vCPU, 32 GB RAM, 1 TB Storage",
+      "10 concurrent, Unlimited scheduled tasks",
+    ],
+  },
 ];
 
 export default function IosPaywallScreen({
   onNext,
-  onDismiss,
 }: {
   onNext: () => void;
-  onDismiss?: () => void;
 }) {
-  const [showPlans, setShowPlans] = useState(false);
-  const [selectedPlan, setSelectedPlan] = useState("starter");
   const [billing, setBilling] = useState<"monthly" | "yearly">("monthly");
+  const [selectedPlan, setSelectedPlan] = useState("starter");
+  const scrollRef = useRef<HTMLDivElement>(null);
 
   const currentPlan = plans.find((p) => p.id === selectedPlan) || plans[0];
-  const currentPrice = billing === "monthly" ? currentPlan.monthly : currentPlan.yearly;
 
   return (
-    <>
-      <div className="flex flex-col items-center justify-between min-h-screen px-6 pt-14 pb-8">
-        {/* Top bar: Close + Restore */}
-        <div className="w-full max-w-sm flex items-center justify-between animate-fade-up">
-          {onDismiss ? (
-            <button
-              onClick={onDismiss}
-              className="text-warm-gray/60 hover:text-warm-gray cursor-pointer transition-colors"
-            >
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <line x1="18" y1="6" x2="6" y2="18" />
-                <line x1="6" y1="6" x2="18" y2="18" />
-              </svg>
-            </button>
-          ) : (
-            <div className="w-6" />
-          )}
-          <button className="text-warm-gray/50 hover:text-warm-gray text-[13px] cursor-pointer transition-colors">
-            Restore
-          </button>
-        </div>
+    <div className="flex flex-col min-h-screen pb-8">
+      {/* Top bar */}
+      <div className="flex items-center justify-end px-6 pt-14 animate-fade-up">
+        <button className="text-warm-gray/50 hover:text-warm-gray text-[13px] cursor-pointer transition-colors">
+          Restore
+        </button>
+      </div>
 
-        {/* Header */}
-        <div className="flex flex-col items-center">
-          <h2
-            className="font-serif text-[30px] font-semibold text-center leading-tight animate-fade-up"
-            style={{ animationDelay: "100ms" }}
-          >
-            Unlock Claw to reach
-            <br />
-            <span className="font-semibold">your full potential</span>
-          </h2>
+      {/* Title */}
+      <h1 className="text-[28px] font-semibold text-center leading-tight tracking-tight px-6 mt-4 animate-fade-up">
+        Choose your plan
+      </h1>
 
-          {/* Mock phone showing the app */}
-          <div className="mt-6 w-full max-w-[280px] animate-fade-up" style={{ animationDelay: "200ms" }}>
-            <div className="bg-white rounded-[24px] border-[3px] border-foreground/10 shadow-lg overflow-hidden">
-              {/* Mini status bar */}
-              <div className="flex items-center justify-between px-5 pt-2.5 pb-1">
-                <span className="text-[10px] font-semibold text-foreground/50">9:41</span>
-                <div className="flex items-center gap-1 text-foreground/40">
-                  <div className="w-[12px] h-[8px] flex items-end gap-[1px]">
-                    <div className="w-[1.5px] h-[3px] bg-foreground/30 rounded-[0.5px]" />
-                    <div className="w-[1.5px] h-[5px] bg-foreground/30 rounded-[0.5px]" />
-                    <div className="w-[1.5px] h-[7px] bg-foreground/30 rounded-[0.5px]" />
-                    <div className="w-[1.5px] h-[8px] bg-foreground/50 rounded-[0.5px]" />
-                  </div>
-                </div>
-              </div>
-
-              {/* App content preview */}
-              <div className="px-4 pb-4 pt-1">
-                <div className="flex items-center gap-2 mb-3">
-                  <PandaAvatar size={22} />
-                  <span className="font-serif text-[13px] font-semibold">Claw</span>
-                </div>
-
-                {/* Feature cards */}
-                <div className="flex flex-col gap-2">
-                  <div className="bg-[#F5F5F5] rounded-xl px-3.5 py-2.5">
-                    <div className="flex items-center gap-2">
-                      <span className="text-[14px]">☁️</span>
-                      <div>
-                        <p className="text-[11px] font-semibold text-foreground">Cloud Computer</p>
-                        <p className="text-[9px] text-warm-gray">Run tasks 24/7, even when you sleep</p>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="bg-[#F5F5F5] rounded-xl px-3.5 py-2.5">
-                    <div className="flex items-center gap-2">
-                      <span className="text-[14px]">⚡</span>
-                      <div>
-                        <p className="text-[11px] font-semibold text-foreground">Unlimited Tasks</p>
-                        <p className="text-[9px] text-warm-gray">No daily limits on what Claw can do</p>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="bg-[#F5F5F5] rounded-xl px-3.5 py-2.5">
-                    <div className="flex items-center gap-2">
-                      <span className="text-[14px]">🧠</span>
-                      <div>
-                        <p className="text-[11px] font-semibold text-foreground">Learns Your Style</p>
-                        <p className="text-[9px] text-warm-gray">Gets smarter the more you use it</p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Bottom CTA area */}
-        <div className="w-full max-w-sm flex flex-col items-center">
-          {/* Free trial badge — only for starter */}
-          {currentPlan.freeTrial && (
-            <div className="flex items-center gap-2 mb-4 animate-fade-up" style={{ animationDelay: "350ms" }}>
-              <svg className="text-accent" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                <polyline points="20 6 9 17 4 12" />
-              </svg>
-              <span className="text-[15px] font-semibold text-foreground">7 Days Free — No Payment Due Now</span>
-            </div>
-          )}
-
+      {/* Billing toggle */}
+      <div className="flex items-center justify-center mt-5 animate-fade-up" style={{ animationDelay: "100ms" }}>
+        <div className="relative flex bg-[#F0F0F0] rounded-full p-[3px]">
           <button
-            onClick={onNext}
-            className="w-full btn-primary text-[16px] py-[16px] animate-fade-up"
-            style={{ animationDelay: "400ms" }}
+            onClick={() => setBilling("monthly")}
+            className={`px-5 py-2 rounded-full text-[13px] font-medium transition-all cursor-pointer ${
+              billing === "monthly"
+                ? "bg-foreground text-white shadow-sm"
+                : "text-warm-gray hover:text-foreground"
+            }`}
           >
-            Continue
+            Monthly
           </button>
-
-          <p
-            className="mt-3 text-warm-gray/50 text-[12px] text-center animate-fade-up"
-            style={{ animationDelay: "450ms" }}
+          <button
+            onClick={() => setBilling("yearly")}
+            className={`px-5 py-2 rounded-full text-[13px] font-medium transition-all cursor-pointer ${
+              billing === "yearly"
+                ? "bg-foreground text-white shadow-sm"
+                : "text-warm-gray hover:text-foreground"
+            }`}
           >
-            {currentPlan.freeTrial ? "Then " : ""}${currentPrice}/{billing === "monthly" ? "mo" : "mo, billed yearly"} · Cancel anytime
-          </p>
-
-          {/* View all plans + Apple links */}
-          <div className="mt-4 flex flex-col items-center gap-2 animate-fade-up" style={{ animationDelay: "480ms" }}>
-            <button
-              onClick={() => setShowPlans(true)}
-              className="text-accent hover:text-accent/80 text-[13px] font-medium cursor-pointer transition-colors"
-            >
-              View all plans
-            </button>
-            <div className="flex items-center gap-3 text-warm-gray/40 text-[11px]">
-              <button className="hover:text-warm-gray cursor-pointer transition-colors underline">Terms</button>
-              <span>·</span>
-              <button className="hover:text-warm-gray cursor-pointer transition-colors underline">Privacy</button>
-            </div>
-          </div>
+            Annually
+          </button>
+          <span className="absolute -top-2.5 right-0 text-[10px] font-semibold text-white bg-[#EF4444] px-2 py-0.5 rounded-full">
+            ~2 mo free
+          </span>
         </div>
       </div>
 
-      {/* Plans bottom sheet */}
-      {showPlans && (
-        <>
-          {/* Backdrop */}
-          <div
-            className="fixed inset-0 bg-black/40 z-50 transition-opacity"
-            onClick={() => setShowPlans(false)}
-          />
+      {/* Horizontal scrolling plan cards */}
+      <div
+        ref={scrollRef}
+        className="flex gap-4 overflow-x-auto snap-x snap-mandatory px-6 mt-6 pb-2 scrollbar-hide animate-fade-up"
+        style={{ animationDelay: "200ms", scrollbarWidth: "none", msOverflowStyle: "none" }}
+      >
+        {plans.map((plan) => {
+          const isSelected = selectedPlan === plan.id;
+          const price = plan.id === "starter"
+            ? plan.priceDisplay
+            : `$${billing === "monthly" ? plan.monthly : plan.yearly}`;
+          const note = plan.id === "starter"
+            ? `for 7 days, then $${billing === "monthly" ? plan.monthly : plan.yearly}/mo`
+            : plan.priceNote;
 
-          {/* Sheet */}
-          <div className="fixed bottom-0 left-0 right-0 z-50 bg-white rounded-t-3xl shadow-2xl animate-slide-up">
-            {/* Handle */}
-            <div className="flex justify-center pt-3 pb-2">
-              <div className="w-10 h-1 rounded-full bg-cream-dark/40" />
-            </div>
+          return (
+            <div
+              key={plan.id}
+              onClick={() => setSelectedPlan(plan.id)}
+              className={`relative flex-shrink-0 w-[85%] snap-center rounded-2xl border-[1.5px] p-5 cursor-pointer transition-all ${
+                isSelected
+                  ? "border-foreground shadow-lg"
+                  : "border-cream-dark/60"
+              }`}
+            >
+              {plan.bestValue && (
+                <span className="absolute -top-3 left-5 text-[10px] font-semibold text-white bg-foreground px-3 py-1 rounded-full uppercase tracking-wide">
+                  Best Value
+                </span>
+              )}
 
-            <div className="px-6 pb-8">
-              <h3 className="font-serif text-[22px] font-semibold text-center mb-4">
-                Choose your plan
-              </h3>
+              <h3 className="text-[18px] font-bold text-foreground">{plan.name}</h3>
+              <p className="text-warm-gray text-[13px] mt-0.5">{plan.desc}</p>
 
-              {/* Monthly / Yearly toggle */}
-              <div className="flex items-center justify-center mb-5">
-                <div className="flex bg-cream-dark/40 rounded-full p-0.5">
-                  <button
-                    onClick={() => setBilling("monthly")}
-                    className={`px-5 py-2 rounded-full text-[13px] font-medium transition-all cursor-pointer ${
-                      billing === "monthly"
-                        ? "bg-white text-foreground shadow-sm"
-                        : "text-warm-gray hover:text-foreground"
-                    }`}
-                  >
-                    Monthly
-                  </button>
-                  <button
-                    onClick={() => setBilling("yearly")}
-                    className={`px-5 py-2 rounded-full text-[13px] font-medium transition-all cursor-pointer flex items-center gap-1.5 ${
-                      billing === "yearly"
-                        ? "bg-white text-foreground shadow-sm"
-                        : "text-warm-gray hover:text-foreground"
-                    }`}
-                  >
-                    Yearly
-                    <span className="text-[10px] font-semibold text-accent bg-accent-light/60 px-1.5 py-0.5 rounded-full">
-                      -16%
-                    </span>
-                  </button>
-                </div>
+              <div className="mt-4 flex items-baseline gap-1.5">
+                <span className="text-[36px] font-bold text-foreground leading-none">{price}</span>
+                <span className="text-warm-gray text-[14px]">{note}</span>
               </div>
 
-              <div className="flex flex-col gap-3">
-                {plans.map((plan) => {
-                  const price = billing === "monthly" ? plan.monthly : plan.yearly;
-                  return (
-                    <button
-                      key={plan.id}
-                      onClick={() => setSelectedPlan(plan.id)}
-                      className={`relative flex items-center gap-4 rounded-2xl px-5 py-4 border-[1.5px] transition-all cursor-pointer ${
-                        selectedPlan === plan.id
-                          ? "border-accent bg-accent-light/40 shadow-sm"
-                          : "border-cream-dark/60 bg-white"
-                      }`}
-                    >
-                      {/* Free trial badge */}
-                      {plan.freeTrial && (
-                        <span className="absolute -top-2.5 left-5 text-[10px] font-semibold text-white bg-accent px-2 py-0.5 rounded-full">
-                          7 days free
-                        </span>
-                      )}
-
-                      {/* Radio */}
-                      <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center flex-shrink-0 ${
-                        selectedPlan === plan.id ? "border-accent" : "border-cream-dark"
-                      }`}>
-                        {selectedPlan === plan.id && (
-                          <div className="w-2.5 h-2.5 rounded-full bg-accent" />
-                        )}
-                      </div>
-
-                      <div className="flex-1 text-left">
-                        <p className="font-semibold text-[15px] text-foreground">{plan.name}</p>
-                        <p className="text-warm-gray text-[12px]">{plan.desc}</p>
-                      </div>
-
-                      <div className="text-right flex-shrink-0">
-                        <span className="font-semibold text-[18px] text-foreground">${price}</span>
-                        <span className="text-warm-gray text-[12px]">/mo</span>
-                        {billing === "yearly" && (
-                          <p className="text-warm-gray/50 text-[10px] line-through">${plan.monthly}/mo</p>
-                        )}
-                      </div>
-                    </button>
-                  );
-                })}
+              <div className="mt-5 flex flex-col gap-2.5">
+                {plan.features.map((f, i) => (
+                  <div key={i} className="flex items-start gap-2.5">
+                    <svg className="text-foreground flex-shrink-0 mt-0.5" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                      <polyline points="20 6 9 17 4 12" />
+                    </svg>
+                    <span className="text-[13px] leading-snug text-foreground">{f}</span>
+                  </div>
+                ))}
               </div>
-
-              <button
-                onClick={() => setShowPlans(false)}
-                className="w-full btn-primary mt-5 text-[15px] py-[14px]"
-              >
-                Select {currentPlan.name}
-              </button>
             </div>
-          </div>
-        </>
-      )}
-    </>
+          );
+        })}
+      </div>
+
+      <div className="flex-1" />
+
+      {/* Bottom CTA */}
+      <div className="px-6 mt-6">
+        <button
+          onClick={onNext}
+          className="w-full btn-primary text-[16px] py-[16px] animate-fade-up"
+          style={{ animationDelay: "350ms" }}
+        >
+          {currentPlan.cta}
+        </button>
+
+        <p
+          className="mt-3 text-warm-gray/50 text-[12px] text-center animate-fade-up"
+          style={{ animationDelay: "400ms" }}
+        >
+          {currentPlan.id === "starter"
+            ? `7-day free trial then $${billing === "monthly" ? currentPlan.monthly : currentPlan.yearly} / month`
+            : `$${billing === "monthly" ? currentPlan.monthly : currentPlan.yearly} / month`}
+          <br />
+          No commitment. Cancel anytime.
+        </p>
+
+        <div className="flex items-center justify-center gap-3 text-warm-gray/40 text-[11px] mt-3 animate-fade-up" style={{ animationDelay: "430ms" }}>
+          <button className="hover:text-warm-gray cursor-pointer transition-colors underline">Terms</button>
+          <span>·</span>
+          <button className="hover:text-warm-gray cursor-pointer transition-colors underline">Privacy</button>
+        </div>
+      </div>
+    </div>
   );
 }

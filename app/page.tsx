@@ -31,7 +31,6 @@ import AppHomeScreen from "@/components/screens/AppHomeScreen";
 type Screen =
   | "splash"
   | "hero"
-  | "greet"
   | "nameRole"
   | "register"
   | "inviteCode"
@@ -43,7 +42,6 @@ type Screen =
 const SCREEN_ORDER: Screen[] = [
   "splash",
   "hero",
-  "greet",
   "nameRole",
   "register",
   "inviteCode",
@@ -51,11 +49,11 @@ const SCREEN_ORDER: Screen[] = [
   "paywall",
 ];
 
-// Progress dots start from nameRole (index 0) through paywall (index 4)
+// Progress dots: nameRole=0, register=1, inviteCode=2, notifications=3, paywall=4
 function getStepIndex(screen: Screen): number {
   if (screen === "setupLoading") return 4;
   const idx = SCREEN_ORDER.indexOf(screen);
-  return Math.max(0, idx - 3); // greet/hero/splash are before dots
+  return Math.max(0, idx - 2); // hero/splash are before dots
 }
 
 const TOTAL_STEPS = 5;
@@ -115,24 +113,15 @@ export default function Home() {
   if (!loaded) return null;
 
   // Nav bar: only show for onboarding steps (NOT sign-in mode, paywall, etc.)
-  const showNav = !["splash", "hero", "greet", "paywall", "setupLoading", "appHome"].includes(state.screen)
+  const showNav = !["splash", "hero", "paywall", "setupLoading", "appHome"].includes(state.screen)
     && !(state.screen === "register" && state.isSignIn);
 
   return (
     <div className="relative min-h-screen">
       {showNav && (
-        <div className="fixed top-0 left-0 right-0 z-50 bg-cream/80 backdrop-blur-md">
-          <div className="max-w-md mx-auto flex items-center px-5 pt-3">
-            <button
-              onClick={goBack}
-              className="text-warm-gray hover:text-foreground text-[13px] font-medium tracking-wide cursor-pointer mr-auto transition-colors"
-            >
-              &larr; Back
-            </button>
-            <div className="flex-1">
-              <ProgressDots current={getStepIndex(state.screen)} total={TOTAL_STEPS} />
-            </div>
-            <div className="w-12" />
+        <div className="fixed top-0 left-0 right-0 z-50 bg-white">
+          <div className="max-w-md mx-auto px-5 pt-12">
+            <ProgressDots current={getStepIndex(state.screen)} total={TOTAL_STEPS} />
           </div>
         </div>
       )}
@@ -153,14 +142,9 @@ export default function Home() {
           {/* 2. Hero — visual demo + CTA */}
           {state.screen === "hero" && (
             <ValuePropsScreen
-              onNext={() => update({ screen: "greet", isSignIn: false })}
+              onNext={() => update({ screen: "nameRole", isSignIn: false })}
               onSignIn={() => update({ screen: "register", isSignIn: true })}
             />
-          )}
-
-          {/* 3. Greet — panda says hi */}
-          {state.screen === "greet" && (
-            <GreetScreen onDone={() => update({ screen: "nameRole" })} />
           )}
 
           {/* 4. Name + Role — personalization first */}
@@ -193,7 +177,6 @@ export default function Home() {
           {state.screen === "paywall" && (
             <IosPaywallScreen
               onNext={() => update({ screen: "setupLoading" })}
-              onDismiss={() => update({ screen: "setupLoading" })}
             />
           )}
 

@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect } from "react";
-import PandaAvatar from "../PandaAvatar";
 
 export default function SplashScreen({
   onDone,
@@ -9,27 +8,17 @@ export default function SplashScreen({
   onDone: () => void;
 }) {
   useEffect(() => {
-    const timer = setTimeout(onDone, 1200);
+    const timer = setTimeout(onDone, 1500);
     return () => clearTimeout(timer);
   }, [onDone]);
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen px-6">
-      <div className="animate-fade-up">
-        <PandaAvatar size={80} />
-      </div>
-      <p
-        className="mt-5 font-serif text-[22px] font-medium text-foreground tracking-tight animate-fade-up"
-        style={{ animationDelay: "150ms" }}
-      >
-        Claw
-      </p>
-      <p
-        className="mt-1 text-warm-gray text-[12px] tracking-[0.15em] uppercase animate-fade-up"
-        style={{ animationDelay: "300ms" }}
-      >
-        by PandaClaw
-      </p>
+    <div className="flex items-center justify-center min-h-screen px-6">
+      <img
+        src="https://gimg.iminsp.com/cdn-cgi/image/width=400,quality=70,format=webp,fit=scale-down/shared_images/20260318/a2e9a59b-85a4-4e1e-8197-2f4ffbd63c62.gif"
+        alt="Loading"
+        className="w-48 h-48 object-contain animate-fade-up"
+      />
     </div>
   );
 }

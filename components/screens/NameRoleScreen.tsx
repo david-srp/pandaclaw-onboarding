@@ -1,8 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import PandaAvatar from "../PandaAvatar";
-import SpeechBubble from "../SpeechBubble";
 
 const roles = [
   { emoji: "💼", label: "Work & Scheduling", desc: "Meetings · Emails · Calendar" },
@@ -46,16 +44,18 @@ export default function NameRoleScreen({
   if (step === "role") {
     return (
       <div className="flex flex-col min-h-screen px-6 pt-16 pb-0">
-        {/* Header: avatar + bubble side by side */}
-        <div className="flex items-start gap-3 w-full max-w-sm mx-auto flex-shrink-0">
-          <PandaAvatar size={44} className="flex-shrink-0 animate-fade-up" />
-          <div className="flex-1 animate-fade-up" style={{ animationDelay: "100ms" }}>
-            <SpeechBubble>Nice to meet you, {name}! Pick everything that fits — I&apos;ll adapt to you.</SpeechBubble>
-          </div>
+        {/* Title */}
+        <div className="pt-8 w-full max-w-sm mx-auto flex-shrink-0">
+          <h1 className="text-[28px] font-semibold text-foreground leading-tight tracking-tight animate-fade-up">
+            What do you need help with?
+          </h1>
+          <p className="mt-2 text-warm-gray text-[14px] animate-fade-up" style={{ animationDelay: "100ms" }}>
+            You can always change this later
+          </p>
         </div>
 
         {/* Scrollable role list */}
-        <div className="mt-5 w-full max-w-sm mx-auto flex-1 overflow-y-auto pb-28">
+        <div className="mt-6 w-full max-w-sm mx-auto flex-1 overflow-y-auto pb-28">
           <div className="flex flex-col gap-2.5 stagger-children">
             {roles.map((r) => {
               const isSelected = selectedRoles.includes(r.label);
@@ -96,7 +96,7 @@ export default function NameRoleScreen({
         </div>
 
         {/* Sticky bottom CTA */}
-        <div className="fixed bottom-0 left-0 right-0 z-40 bg-cream/90 backdrop-blur-md pb-8 pt-4 px-6">
+        <div className="fixed bottom-0 left-0 right-0 z-40 bg-white pb-8 pt-4 px-6">
           <div className="w-full max-w-sm mx-auto">
             <button
               onClick={handleRoleSubmit}
@@ -111,20 +111,16 @@ export default function NameRoleScreen({
     );
   }
 
-  // ── Name step ── (input area upper, CTA fixed bottom)
+  // ── Name step ──
   return (
     <div className="flex flex-col min-h-screen px-6 pt-16 pb-0">
-      {/* Upper area — avatar + input */}
-      <div className="pt-8 flex flex-col items-center">
-        {/* Avatar + bubble side by side */}
-        <div className="flex items-start gap-3 w-full max-w-sm">
-          <PandaAvatar size={52} className="flex-shrink-0 animate-fade-up" />
-          <div className="flex-1 animate-fade-up" style={{ animationDelay: "100ms" }}>
-            <SpeechBubble>First, what should I call you?</SpeechBubble>
-          </div>
-        </div>
+      {/* Upper area — title + input */}
+      <div className="pt-8 w-full max-w-sm mx-auto">
+        <h1 className="text-[28px] font-semibold text-foreground leading-tight tracking-tight animate-fade-up">
+          What should we call you?
+        </h1>
 
-        <div className="mt-10 w-full max-w-sm animate-fade-up" style={{ animationDelay: "400ms" }}>
+        <div className="mt-10 w-full animate-fade-up" style={{ animationDelay: "200ms" }}>
           <input
             type="text"
             value={name}
@@ -138,7 +134,7 @@ export default function NameRoleScreen({
       </div>
 
       {/* Sticky bottom CTA */}
-      <div className="fixed bottom-0 left-0 right-0 z-40 bg-cream/90 backdrop-blur-md pb-8 pt-4 px-6">
+      <div className="fixed bottom-0 left-0 right-0 z-40 bg-white pb-8 pt-4 px-6">
         <div className="w-full max-w-sm mx-auto">
           <button
             onClick={handleNameSubmit}
